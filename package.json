@@ -1,0 +1,10 @@
+{
+    "name": "literal-life-church-video-player",
+    "version": "0.0.1",
+    "scripts": {
+        "dev": "serve ."
+    },
+    "devDependencies": {
+        "serve": "14.2.6"
+    }
+}
