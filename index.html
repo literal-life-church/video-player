@@ -7,9 +7,13 @@
 
         <style>
             #literal-life-church-video-player {
-                width: 50%;
-                max-width: 960px;
+                align-items: center;
                 background: #000;
+                color: #ffffff;
+                display: flex;
+                justify-content: center;
+                max-width: 960px;
+                width: 50%;
             }
         </style>
     </head>
@@ -17,7 +21,9 @@
         <div
             id="literal-life-church-video-player"
             data-aspect-ratio="16 / 9"
-            data-backend-host="api.example.com"></div>
+            data-backend-host="api.media.literallife.church"
+            data-offline-message="# Event Offline
+Please come back later."></div>
 
         <script src="player.js"></script>
     </body>
