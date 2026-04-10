@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const CONTAINER_ID = "literal-life-church-video-player";
     const DEFAULT_ASPECT_RATIO = "16 / 9";
     const DEFAULT_OFFLINE_MESSAGE = "This event is offline.";
+    const DEFAULT_PREWARMING_MESSAGE = "We are getting ready to go live very soon. Please stay tuned.";
     const LOGGING_TAG = "[Literal Life Church Video Player]";
     const MARKED_URL = "https://cdn.jsdelivr.net/npm/marked@18.0.0/lib/marked.umd.min.js";
 
@@ -45,6 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
     container.style.aspectRatio = aspectRatio;
 
     const offlineMessage = container.dataset.offlineMessage?.trim() || DEFAULT_OFFLINE_MESSAGE;
+    const prewarmingMessage = container.dataset.prewarmingMessage?.trim() || DEFAULT_PREWARMING_MESSAGE;
 
     // endregion
 
@@ -54,6 +56,9 @@ document.addEventListener("DOMContentLoaded", () => {
             if (data.status === "offline") {
                 await loadScript(MARKED_URL);
                 container.innerHTML = `<div>${marked.parse(offlineMessage)}</div>`;
+            } else if (data.status === "prewarming") {
+                await loadScript(MARKED_URL);
+                container.innerHTML = `<div>${marked.parse(prewarmingMessage)}</div>`;
             }
         })
         .catch((error) => console.error(error));
