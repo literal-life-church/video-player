@@ -7,7 +7,7 @@ Frontend video player for live streaming events that hooks into our [Media API](
 Here is how you can get this project up and running on your machine.
 
   1. Install the latest [Node.js LTS](https://nodejs.org/en/download) version
-  2. Run this project on your machine with 
+  2. Run this project on your machine with these commands:
 
       ```sh
       npm i
@@ -51,3 +51,35 @@ If you want to embed this player onto your webpage, follow these steps. Keep in 
 | `data-backend-host` | Yes | `string` | — | Hostname of your [Media API](https://github.com/literal-life-church/media-api) instance. No protocol, no trailing path (e.g. `api.example.com`). |
 | `data-offline-message` | No | `string` (Markdown) | `This event is offline.` | Message displayed when the event is offline. Supports Markdown. Multi-line values are supported via [multi-line HTML attributes](https://stackoverflow.com/a/38880984). |
 | `data-prewarming-message` | No | `string` (Markdown) | `We are getting ready to go live very soon. Please stay tuned.` | Message displayed when the event is prewarming (created on YouTube but not yet broadcasting). Supports Markdown. Multi-line values are supported via [multi-line HTML attributes](https://stackoverflow.com/a/38880984). |
+
+## Player States
+
+The player can fall into one of 4 possible states as detailed in the subsequent sections. In each situation, the player modifies the container's classes and `data-` attributes and, in some cases, injects structured content so you have fine-grained styling control and better semantic meaning for this content.
+
+### Canceled
+
+When the backend returns `status: "canceled"`, the player enters an event canceled state.
+
+#### Container modifications
+
+The following attributes are added to the outer container `<div>` when the canceled state is active:
+
+| Attribute | Value | Description |
+| --- | --- | --- |
+| `class` | `event-canceled` | Added to the container's class list. |
+| `data-event-canceled` | *(empty)* | Present when the event is in the canceled state. |
+| `data-status` | `canceled` | Reflects the current player status. |
+
+#### CSS classes
+
+All content is injected inside the container and can be targeted with the following classes:
+
+| Class | Element | Description |
+| --- | --- | --- |
+| `message-container message-event-canceled-container` | `<div>` | Goes directly inside of the container `<div />` to wrap all canceled state content. Note that ALL messages, even if they aren't cancellation messages, will get wrapped inside of the `message-container` `<div>`. `message-event-canceled-container` is unique to cancellation messages, though. |
+| `event-canceled-status-balloon` | `<span>` | The "Canceled" status badge at the top. |
+| `event-canceled-name` | `<h1>` | The name of the canceled event. |
+| `event-canceled-original-schedule` | `<p>` | The originally scheduled time paragraph directly below the event name. Has `padding-bottom: 1rem` applied by default. |
+| `event-canceled-original-schedule-label` | `<span>` | The "Originally scheduled for: " label within the schedule paragraph. |
+| `event-canceled-original-schedule-time` | `<span>` | The formatted date and time within the schedule paragraph. |
+| `event-canceled-reason` | `<div>` | Contains the Markdown-rendered reason for cancellation directly below the originally scheduled time. |
