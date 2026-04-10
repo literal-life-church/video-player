@@ -22,7 +22,7 @@ The player depends on the [Media API](https://github.com/literal-life-church/med
 ## Key Conventions
 
 - **One file.** Do not introduce additional JS files, modules, or a build pipeline unless explicitly asked. All changes go into `player.js`.
-- **No npm runtime dependencies.** Do not add runtime npm packages. The only permitted dev dependency is the local server (`serve`). Third-party libraries are loaded at runtime from jsDelivr, CDNJS, or other CDN using the `loadScript` utility (see below).
+- **No npm runtime dependencies.** Do not add runtime npm packages. The only permitted dev dependency is the local server (`browser-sync`). Third-party libraries are loaded at runtime from jsDelivr, CDNJS, or other CDN using the `loadScript` utility (see below).
 - **Plain JS.** No TypeScript, no transpilation, no module syntax (`import`/`export`). The file is served as-is by jsDelivr and must run natively in the browser.
 - **Constants block at the top.** Configuration defaults (e.g. `CONTAINER_ID`, `DEFAULT_ASPECT_RATIO`, `LOGGING_TAG`) are declared in the `// region Configuration Defaults` block at the top of the `DOMContentLoaded` callback. Add new constants there, not inline.
 - **Console error prefix.** All error messages must be prefixed with the `LOGGING_TAG` constant so they are identifiable in the browser console.

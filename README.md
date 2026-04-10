@@ -76,7 +76,7 @@ All content is injected inside the container and can be targeted with the follow
 
 | Class | Element | Description |
 | --- | --- | --- |
-| `message-container message-event-canceled-container` | `<div>` | Goes directly inside of the container `<div />` to wrap all canceled state content. |
+| `message-container message-event-canceled-container` | `<div>` | Goes directly inside of the container `<div />` to wrap all canceled state content. Note that ALL messages, even if they aren't cancellation messages, will get wrapped inside of the `message-container` `<div>`. `message-event-canceled-container` is unique to cancellation messages, though. |
 | `event-canceled-status-balloon` | `<span>` | The "Canceled" status badge at the top. |
 | `event-canceled-name` | `<h1>` | The name of the canceled event. |
 | `event-canceled-original-schedule` | `<p>` | The originally scheduled time paragraph directly below the event name. Has `padding-bottom: 1rem` applied by default. |
