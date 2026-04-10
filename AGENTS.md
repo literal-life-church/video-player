@@ -50,6 +50,10 @@ loadScript("https://cdn.jsdelivr.net/npm/<package>@<version>/<file>")
 | --- | --- | --- | --- |
 | [Marked](https://marked.js.org/) | `https://cdn.jsdelivr.net/npm/marked@18.0.0/lib/marked.umd.min.js` | `window.marked` | Parse Markdown content returned by the Media API |
 
+## Player States
+
+Each API status (`offline`, `prewarming`, `live`, `canceled`) has a corresponding branch in the `fetch` handler in `player.js`. Some states apply classes, data attributes, and CSS hooks to the container or injected content to give the implementing page styling control and better semantic meaning. For the full reference on what each state injects and which CSS classes are available, see the **Player States** section of the README.
+
 ## Backend
 
 The Media API endpoint used by this library is `https://<data-backend-host>/live-streaming`.
