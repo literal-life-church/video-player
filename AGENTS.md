@@ -48,7 +48,7 @@ loadScript("https://cdn.jsdelivr.net/npm/<package>@<version>/<file>")
 
 | Library | CDN URL | `window` global | Purpose |
 | --- | --- | --- | --- |
-| [Marked](https://marked.js.org/) | `https://cdn.jsdelivr.net/npm/marked@X.Y.Z/marked.min.js` | `window.marked` | Parse Markdown content returned by the Media API |
+| [Marked](https://marked.js.org/) | `https://cdn.jsdelivr.net/npm/marked@X.Y.Z/lib/marked.umd.min.js` | `window.marked` | Parse Markdown content returned by the Media API |
 
 ## Backend
 

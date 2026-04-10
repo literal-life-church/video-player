@@ -47,3 +47,4 @@ If you want to embed this player onto your webpage, follow these steps. Keep in 
 | `id` | Yes | `string` | — | Must be exactly `literal-life-church-video-player`. The script will not initialize against any other ID. |
 | `data-aspect-ratio` | No | `string` | `16 / 9` | Any value supported by the CSS [`aspect-ratio`](https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio) property. Sets the aspect ratio of this container. |
 | `data-backend-host` | Yes | `string` | — | Hostname of your [Media API](https://github.com/literal-life-church/media-api) instance. No protocol, no trailing path (e.g. `api.example.com`). |
+| `data-offline-message` | No | `string` (Markdown) | `This event is offline.` | Message displayed when the event is offline. Supports Markdown. Multi-line values are supported via [multi-line HTML attributes](https://stackoverflow.com/a/38880984). |
