@@ -36,7 +36,9 @@ If you want to embed this player onto your webpage, follow these steps. Keep in 
       <div
           id="literal-life-church-video-player"
           data-aspect-ratio="16 / 9"
-          data-backend-host="api.example.com">
+          data-backend-host="api.example.com"
+          data-offline-message="We are currently **offline** right now."
+          data-prewarming-message="We will be going live *very* soon.">
       </div>
       ```
 
