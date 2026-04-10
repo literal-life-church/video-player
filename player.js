@@ -8,6 +8,27 @@ function loadScript(src) {
     });
 }
 
+function ordinalSuffix(day) {
+    if (day >= 11 && day <= 13) return "th";
+
+    switch (day % 10) {
+        case 1: return "st";
+        case 2: return "nd";
+        case 3: return "rd";
+        default: return "th";
+    }
+}
+
+function formatEventDate(isoString) {
+    const date = new Date(isoString);
+    const weekday = date.toLocaleDateString("en-US", { weekday: "long" });
+    const month = date.toLocaleDateString("en-US", { month: "long" });
+    const day = date.getDate();
+    const year = date.getFullYear();
+    const time = date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+    return `${weekday}, ${month} ${day}${ordinalSuffix(day)}, ${year} at ${time}`;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     // region Configuration Defaults
 
@@ -59,6 +80,57 @@ document.addEventListener("DOMContentLoaded", () => {
             } else if (data.status === "prewarming") {
                 await loadScript(MARKED_URL);
                 container.innerHTML = `<div>${marked.parse(prewarmingMessage)}</div>`;
+            } else if (data.status === "canceled") {
+                await loadScript(MARKED_URL);
+
+                container.classList.add("event-canceled");
+                container.dataset.status = "canceled";
+                container.setAttribute("data-event-canceled", "");
+
+                const messageContainer = document.createElement("div");
+                messageContainer.className = "message-container message-event-canceled-container";
+                messageContainer.style.textAlign = "left";
+
+                const balloon = document.createElement("span");
+                balloon.className = "event-canceled-status-balloon";
+                balloon.style.backgroundColor = "#CCCCCC";
+                balloon.style.borderRadius = "0.365rem";
+                balloon.style.fontSize = "0.75rem";
+                balloon.style.padding = "0.2rem 0.4rem";
+                balloon.textContent = "Canceled";
+
+                const title = document.createElement("h1");
+                title.className = "event-canceled-name";
+                title.style.margin = "0.5rem 0";
+                title.textContent = data.cancellation.name;
+
+                const schedule = document.createElement("p");
+                schedule.className = "event-canceled-original-schedule";
+                schedule.style.margin = "0";
+                schedule.style.paddingBottom = "1rem";
+
+                const scheduleLabel = document.createElement("span");
+                scheduleLabel.className = "event-canceled-original-schedule-label";
+                scheduleLabel.textContent = "Originally scheduled for: ";
+
+                const scheduleTime = document.createElement("span");
+                scheduleTime.className = "event-canceled-original-schedule-time";
+                scheduleTime.textContent = formatEventDate(data.cancellation.timeOfEvent);
+
+                schedule.appendChild(scheduleLabel);
+                schedule.appendChild(scheduleTime);
+
+                const reason = document.createElement("div");
+                reason.className = "event-canceled-reason";
+                reason.innerHTML = marked.parse(data.cancellation.reason);
+
+                messageContainer.appendChild(balloon);
+                messageContainer.appendChild(title);
+                messageContainer.appendChild(schedule);
+                messageContainer.appendChild(reason);
+
+                container.innerHTML = "";
+                container.appendChild(messageContainer);
             } else if (data.status === "live") {
                 const iframe = document.createElement("iframe");
                 iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
