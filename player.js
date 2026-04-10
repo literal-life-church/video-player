@@ -59,6 +59,19 @@ document.addEventListener("DOMContentLoaded", () => {
             } else if (data.status === "prewarming") {
                 await loadScript(MARKED_URL);
                 container.innerHTML = `<div>${marked.parse(prewarmingMessage)}</div>`;
+            } else if (data.status === "live") {
+                const iframe = document.createElement("iframe");
+                iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+                iframe.allowFullscreen = true;
+                iframe.setAttribute("frameborder", "0");
+                iframe.src = data.event.embedUrl;
+                iframe.style.border = "0";
+                iframe.style.height = "100%";
+                iframe.style.width = "100%";
+                iframe.title = data.event.name;
+
+                container.innerHTML = "";
+                container.appendChild(iframe);
             }
         })
         .catch((error) => console.error(error));
