@@ -29,6 +29,16 @@ function formatEventDate(isoString) {
     return `${weekday}, ${month} ${day}${ordinalSuffix(day)}, ${year} at ${time}`;
 }
 
+function resetContainerState(container) {
+    container.classList.remove("event-canceled", "event-offline", "event-live", "event-prewarming");
+    delete container.dataset.status;
+
+    container.removeAttribute("data-event-canceled");
+    container.removeAttribute("data-event-live");
+    container.removeAttribute("data-event-offline");
+    container.removeAttribute("data-event-prewarming");
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     // region Configuration Defaults
 
@@ -76,12 +86,35 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(async (data) => {
             if (data.status === "offline") {
                 await loadScript(MARKED_URL);
-                container.innerHTML = `<div>${marked.parse(offlineMessage)}</div>`;
+                resetContainerState(container);
+
+                container.classList.add("event-offline");
+                container.dataset.status = "offline";
+                container.setAttribute("data-event-offline", "");
+
+                const messageContainer = document.createElement("div");
+                messageContainer.className = "message-container message-event-offline-container";
+                messageContainer.innerHTML = marked.parse(offlineMessage);
+
+                container.innerHTML = "";
+                container.appendChild(messageContainer);
             } else if (data.status === "prewarming") {
                 await loadScript(MARKED_URL);
-                container.innerHTML = `<div>${marked.parse(prewarmingMessage)}</div>`;
+                resetContainerState(container);
+
+                container.classList.add("event-prewarming");
+                container.dataset.status = "prewarming";
+                container.setAttribute("data-event-prewarming", "");
+
+                const messageContainer = document.createElement("div");
+                messageContainer.className = "message-container message-event-prewarming-container";
+                messageContainer.innerHTML = marked.parse(prewarmingMessage);
+
+                container.innerHTML = "";
+                container.appendChild(messageContainer);
             } else if (data.status === "canceled") {
                 await loadScript(MARKED_URL);
+                resetContainerState(container);
 
                 container.classList.add("event-canceled");
                 container.dataset.status = "canceled";
@@ -132,9 +165,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 container.innerHTML = "";
                 container.appendChild(messageContainer);
             } else if (data.status === "live") {
+                resetContainerState(container);
+
+                container.classList.add("event-live");
+                container.dataset.status = "live";
+                container.setAttribute("data-event-live", "");
+
                 const iframe = document.createElement("iframe");
                 iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
                 iframe.allowFullscreen = true;
+                iframe.className = "player-container";
                 iframe.setAttribute("frameborder", "0");
                 iframe.src = data.event.embedUrl;
                 iframe.style.border = "0";
