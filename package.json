@@ -1,0 +1,10 @@
+{
+    "name": "literal-life-church-video-player",
+    "version": "2026.04.01",
+    "scripts": {
+        "dev": "browser-sync start --server --files \"*.js, *.html, *.css\""
+    },
+    "devDependencies": {
+        "browser-sync": "3.0.4"
+    }
+}
