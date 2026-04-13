@@ -1,0 +1,47 @@
+/* General */
+
+#literal-life-church-video-player {
+    align-items: center;
+    background: #000;
+    border-radius: 0.5rem;
+    color: #ffffff;
+    display: flex;
+    font-family: "Roboto", sans-serif;
+    justify-content: center;
+    max-width: 960px;
+    overflow: hidden;
+    width: 50%;
+}
+
+#literal-life-church-video-player > .message-container {
+    padding: 1rem;
+}
+
+#literal-life-church-video-player > .message-container h1 {
+    color: #d78819;
+    font-size: 3rem;
+    margin: 0.5rem 0;
+}
+
+#literal-life-church-video-player > .message-container p {
+    font-size: 1rem;
+}
+
+#literal-life-church-video-player > .message-container a {
+    color: #d78819;
+}
+
+/* Canceled Event */
+
+#literal-life-church-video-player > .message-container.message-event-canceled-container > .event-canceled-status-balloon {
+    background-color: #d78819 !important;
+    color: #ffffff;
+}
+
+#literal-life-church-video-player > .message-container.message-event-canceled-container > .event-canceled-original-schedule > .event-canceled-original-schedule-label {
+    font-weight: bold;
+}
+
+#literal-life-church-video-player > .message-container.message-event-canceled-container > .event-canceled-original-schedule > .event-canceled-original-schedule-time {
+    font-style: italic;
+}
