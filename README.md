@@ -26,6 +26,9 @@ If you want to embed this player onto your webpage, follow these steps. Keep in 
 
       ```html
       <script src="https://cdn.jsdelivr.net/gh/literal-life-church/video-player@XXXX.YY.ZZ/player.js"></script>
+
+      <!-- Optional styles with pre-configured defaults -->
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/literal-life-church/video-player@XXXX.YY.ZZ/styles.min.css" />
       ```
 
      Where `XXXX.YY.ZZ` is replaced with the most recent release version: ![GitHub Release](https://img.shields.io/github/v/release/literal-life-church/video-player?label=Latest%20Release&sort=date)
@@ -55,6 +58,8 @@ If you want to embed this player onto your webpage, follow these steps. Keep in 
 ## Player States
 
 The player can fall into one of 4 possible states as detailed in the subsequent sections. In each situation, the player modifies the container's classes and `data-` attributes and, in some cases, injects structured content so you have fine-grained styling control and better semantic meaning for this content.
+
+You can observe a few examples of how to use these classes inside of the `styles.css` example file.
 
 ### Offline
 
