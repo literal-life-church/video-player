@@ -56,6 +56,66 @@ If you want to embed this player onto your webpage, follow these steps. Keep in 
 
 The player can fall into one of 4 possible states as detailed in the subsequent sections. In each situation, the player modifies the container's classes and `data-` attributes and, in some cases, injects structured content so you have fine-grained styling control and better semantic meaning for this content.
 
+### Offline
+
+When the backend returns `status: "offline"`, the player enters the offline state.
+
+#### Container modifications
+
+| Attribute | Value | Description |
+| --- | --- | --- |
+| `class` | `event-offline` | Added to the container's class list. |
+| `data-event-offline` | *(empty)* | Present when the event is in the offline state. |
+| `data-status` | `offline` | Reflects the current player status. |
+
+#### CSS classes
+
+| Class | Element | Description |
+| --- | --- | --- |
+| `message-container message-event-offline-container` | `<div>` | Goes directly inside the container to wrap the offline message content. `message-container` is shared across all message states; `message-event-offline-container` is unique to the offline state. |
+
+---
+
+### Prewarming
+
+When the backend returns `status: "prewarming"`, the player enters the prewarming state.
+
+#### Container modifications
+
+| Attribute | Value | Description |
+| --- | --- | --- |
+| `class` | `event-prewarming` | Added to the container's class list. |
+| `data-event-prewarming` | *(empty)* | Present when the event is in the prewarming state. |
+| `data-status` | `prewarming` | Reflects the current player status. |
+
+#### CSS classes
+
+| Class | Element | Description |
+| --- | --- | --- |
+| `message-container message-event-prewarming-container` | `<div>` | Goes directly inside the container to wrap the prewarming message content. `message-container` is shared across all message states; `message-event-prewarming-container` is unique to the prewarming state. |
+
+---
+
+### Live
+
+When the backend returns `status: "live"`, the player enters the live state and embeds the YouTube player.
+
+#### Container modifications
+
+| Attribute | Value | Description |
+| --- | --- | --- |
+| `class` | `event-live` | Added to the container's class list. |
+| `data-event-live` | *(empty)* | Present when the event is in the live state. |
+| `data-status` | `live` | Reflects the current player status. |
+
+#### CSS classes
+
+| Class | Element | Description |
+| --- | --- | --- |
+| `player-container` | `<iframe>` | Applied to the YouTube embed iframe. |
+
+---
+
 ### Canceled
 
 When the backend returns `status: "canceled"`, the player enters an event canceled state.
