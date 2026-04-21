@@ -1,3 +1,14 @@
+/* Transitions */
+
+#literal-life-church-video-player > * {
+    animation: player-fade-in 0.3s ease;
+}
+
+@keyframes player-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 /* General */
 
 #literal-life-church-video-player {
@@ -11,6 +22,10 @@
     max-width: 960px;
     overflow: hidden;
     width: 50%;
+}
+
+#literal-life-church-video-player > .loading-container {
+    color: #d78819;
 }
 
 #literal-life-church-video-player > .message-container {

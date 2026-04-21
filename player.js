@@ -30,13 +30,18 @@ function formatEventDate(isoString) {
 }
 
 function resetContainerState(container) {
-    container.classList.remove("event-canceled", "event-offline", "event-live", "event-prewarming");
-    delete container.dataset.status;
+    container.classList.remove(
+        "event-canceled", "event-offline", "event-live", "event-prewarming",
+        "player-initialized", "player-loading", "player-uninitialized"
+    );
 
+    delete container.dataset.status;
     container.removeAttribute("data-event-canceled");
     container.removeAttribute("data-event-live");
     container.removeAttribute("data-event-offline");
     container.removeAttribute("data-event-prewarming");
+    container.removeAttribute("data-initialized");
+    container.removeAttribute("data-player-loading");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -46,6 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const DEFAULT_ASPECT_RATIO = "16 / 9";
     const DEFAULT_OFFLINE_MESSAGE = "This event is offline.";
     const DEFAULT_PREWARMING_MESSAGE = "We are getting ready to go live very soon. Please stay tuned.";
+    const LOADING_SVG = `<svg width="80" height="80" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" stroke="currentColor"><g fill="none" fill-rule="evenodd" stroke-width="2"><circle cx="22" cy="22" r="1"><animate attributeName="r" begin="0s" dur="1.8s" values="1; 20" calcMode="spline" keyTimes="0; 1" keySplines="0.165, 0.84, 0.44, 1" repeatCount="indefinite"/><animate attributeName="stroke-opacity" begin="0s" dur="1.8s" values="1; 0" calcMode="spline" keyTimes="0; 1" keySplines="0.3, 0.61, 0.355, 1" repeatCount="indefinite"/></circle><circle cx="22" cy="22" r="1"><animate attributeName="r" begin="-0.9s" dur="1.8s" values="1; 20" calcMode="spline" keyTimes="0; 1" keySplines="0.165, 0.84, 0.44, 1" repeatCount="indefinite"/><animate attributeName="stroke-opacity" begin="-0.9s" dur="1.8s" values="1; 0" calcMode="spline" keyTimes="0; 1" keySplines="0.3, 0.61, 0.355, 1" repeatCount="indefinite"/></circle></g></svg>`;
     const LOGGING_TAG = "[Literal Life Church Video Player]";
     const MARKED_URL = "https://cdn.jsdelivr.net/npm/marked@18.0.0/lib/marked.umd.min.js";
 
@@ -81,6 +87,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // endregion
 
+    // region Loading State
+
+    container.classList.add("player-loading", "player-uninitialized");
+    container.dataset.initialized = "false";
+    container.dataset.status = "loading";
+    container.setAttribute("data-player-loading", "");
+
+    const loadingContainer = document.createElement("div");
+    loadingContainer.className = "loading-container";
+    loadingContainer.innerHTML = LOADING_SVG;
+
+    container.innerHTML = "";
+    container.appendChild(loadingContainer);
+
+    // endregion
+
     fetch(apiEndpoint)
         .then((response) => response.json())
         .then(async (data) => {
@@ -88,7 +110,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 await loadScript(MARKED_URL);
                 resetContainerState(container);
 
-                container.classList.add("event-offline");
+                container.classList.add("event-offline", "player-initialized");
+                container.dataset.initialized = "true";
                 container.dataset.status = "offline";
                 container.setAttribute("data-event-offline", "");
 
@@ -102,7 +125,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 await loadScript(MARKED_URL);
                 resetContainerState(container);
 
-                container.classList.add("event-prewarming");
+                container.classList.add("player-initialized", "event-prewarming");
+                container.dataset.initialized = "true";
                 container.dataset.status = "prewarming";
                 container.setAttribute("data-event-prewarming", "");
 
@@ -116,7 +140,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 await loadScript(MARKED_URL);
                 resetContainerState(container);
 
-                container.classList.add("event-canceled");
+                container.classList.add("event-canceled", "player-initialized");
+                container.dataset.initialized = "true";
                 container.dataset.status = "canceled";
                 container.setAttribute("data-event-canceled", "");
 
@@ -167,7 +192,8 @@ document.addEventListener("DOMContentLoaded", () => {
             } else if (data.status === "live") {
                 resetContainerState(container);
 
-                container.classList.add("event-live");
+                container.classList.add("event-live", "player-initialized");
+                container.dataset.initialized = "true";
                 container.dataset.status = "live";
                 container.setAttribute("data-event-live", "");
 
