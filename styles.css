@@ -13,6 +13,7 @@
 
 #literal-life-church-video-player {
     align-items: center;
+    aspect-ratio: 16 / 9;
     background: #000;
     border-radius: 0.5rem;
     color: #ffffff;
@@ -28,8 +29,11 @@
     color: #d78819;
 }
 
+/* Message States (offline, prewarming, canceled) */
+
 #literal-life-church-video-player > .message-container {
     padding: 1rem;
+    text-align: left;
 }
 
 #literal-life-church-video-player > .message-container h1 {
@@ -46,11 +50,34 @@
     color: #d78819;
 }
 
+/* Error State */
+
+#literal-life-church-video-player.player-error {
+    background-color: #fb6b60;
+}
+
+#literal-life-church-video-player > .error-container {
+    padding: 1rem;
+    text-align: left;
+}
+
 /* Canceled Event */
 
 #literal-life-church-video-player > .message-container.message-event-canceled-container > .event-canceled-status-balloon {
     background-color: #d78819 !important;
+    border-radius: 0.365rem;
     color: #ffffff;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.4rem;
+}
+
+#literal-life-church-video-player > .message-container.message-event-canceled-container > .event-canceled-name {
+    margin: 0.5rem 0;
+}
+
+#literal-life-church-video-player > .message-container.message-event-canceled-container > .event-canceled-original-schedule {
+    margin: 0;
+    padding-bottom: 1rem;
 }
 
 #literal-life-church-video-player > .message-container.message-event-canceled-container > .event-canceled-original-schedule > .event-canceled-original-schedule-label {
@@ -59,4 +86,12 @@
 
 #literal-life-church-video-player > .message-container.message-event-canceled-container > .event-canceled-original-schedule > .event-canceled-original-schedule-time {
     font-style: italic;
+}
+
+/* Live Event */
+
+#literal-life-church-video-player > iframe {
+    border: none;
+    height: 100%;
+    width: 100%;
 }
