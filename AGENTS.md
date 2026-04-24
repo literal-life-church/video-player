@@ -52,7 +52,7 @@ loadScript("https://cdn.jsdelivr.net/npm/<package>@<version>/<file>")
 
 ## Player States
 
-Each API status (`offline`, `prewarming`, `live`, `canceled`) has a corresponding branch in the `fetch` handler in `player.js`. Some states apply classes, data attributes, and CSS hooks to the container or injected content to give the implementing page styling control and better semantic meaning. For the full reference on what each state injects and which CSS classes are available, see the **Player States** section of the README.
+The player has 6 states: `loading` (shown immediately while the API call is in flight), `offline`, `prewarming`, `live`, `canceled`, and `error` (shown when the fetch fails). Each has a corresponding branch in `player.js` — `loading` is set up before the `fetch` call; `error` is handled in the `.catch()`. All states stamp `data-error` and `data-initialized` on the container; successful states (`offline`, `prewarming`, `live`, `canceled`) also add `player-initialized` to the class list. For the full reference on what each state injects and which CSS classes are available, see the **Player States** section of the README.
 
 ## Backend
 
