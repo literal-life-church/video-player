@@ -35,16 +35,15 @@ function resetContainerState(container) {
         "player-initialized", "player-loading", "player-uninitialized"
     );
 
+    delete container.dataset.error;
+    delete container.dataset.eventCanceled;
+    delete container.dataset.eventLive;
+    delete container.dataset.eventOffline;
+    delete container.dataset.eventPrewarming;
+    delete container.dataset.initialized;
+    delete container.dataset.playerError;
+    delete container.dataset.playerLoading;
     delete container.dataset.status;
-    container.dataset.error = "false";
-
-    container.removeAttribute("data-event-canceled");
-    container.removeAttribute("data-event-live");
-    container.removeAttribute("data-event-offline");
-    container.removeAttribute("data-event-prewarming");
-    container.removeAttribute("data-initialized");
-    container.removeAttribute("data-player-error");
-    container.removeAttribute("data-player-loading");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -93,8 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
     container.classList.add("player-loading", "player-uninitialized");
     container.dataset.error = "false";
     container.dataset.initialized = "false";
+    container.dataset.playerLoading = "";
     container.dataset.status = "loading";
-    container.setAttribute("data-player-loading", "");
 
     const loadingContainer = document.createElement("div");
     loadingContainer.className = "loading-container";
@@ -118,8 +117,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 await loadScript(MARKED_URL);
 
                 container.classList.add("event-offline");
+                container.dataset.eventOffline = "";
                 container.dataset.status = "offline";
-                container.setAttribute("data-event-offline", "");
 
                 const messageContainer = document.createElement("div");
                 messageContainer.className = "message-container message-event-offline-container";
@@ -131,8 +130,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 await loadScript(MARKED_URL);
 
                 container.classList.add("event-prewarming");
+                container.dataset.eventPrewarming = "";
                 container.dataset.status = "prewarming";
-                container.setAttribute("data-event-prewarming", "");
 
                 const messageContainer = document.createElement("div");
                 messageContainer.className = "message-container message-event-prewarming-container";
@@ -144,8 +143,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 await loadScript(MARKED_URL);
 
                 container.classList.add("event-canceled");
+                container.dataset.eventCanceled = "";
                 container.dataset.status = "canceled";
-                container.setAttribute("data-event-canceled", "");
 
                 const messageContainer = document.createElement("div");
                 messageContainer.className = "message-container message-event-canceled-container";
@@ -186,8 +185,8 @@ document.addEventListener("DOMContentLoaded", () => {
             } else if (data.status === "live") {
 
                 container.classList.add("event-live");
+                container.dataset.eventLive = "";
                 container.dataset.status = "live";
-                container.setAttribute("data-event-live", "");
 
                 const iframe = document.createElement("iframe");
                 iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
@@ -210,8 +209,8 @@ document.addEventListener("DOMContentLoaded", () => {
             container.classList.add("player-error", "player-uninitialized");
             container.dataset.error = "true";
             container.dataset.initialized = "false";
+            container.dataset.playerError = "";
             container.dataset.status = "error";
-            container.setAttribute("data-player-error", "");
 
             const errorContainer = document.createElement("div");
             errorContainer.className = "error-container";
