@@ -38,8 +38,8 @@ If you want to embed this player onto your webpage, follow these steps. Keep in 
       ```html
       <div
           id="literal-life-church-video-player"
-          data-aspect-ratio="16 / 9"
           data-backend-host="api.example.com"
+          data-error-message="Something went wrong. Please try again later."
           data-offline-message="We are currently **offline** right now."
           data-prewarming-message="We will be going live *very* soon.">
       </div>
@@ -50,16 +50,40 @@ If you want to embed this player onto your webpage, follow these steps. Keep in 
 | Attribute | Required | Type | Default | Description |
 | --- | --- | --- | --- | --- |
 | `id` | Yes | `string` | — | Must be exactly `literal-life-church-video-player`. The script will not initialize against any other ID. |
-| `data-aspect-ratio` | No | `string` | `16 / 9` | Any value supported by the CSS [`aspect-ratio`](https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio) property. Sets the aspect ratio of this container. |
 | `data-backend-host` | Yes | `string` | — | Hostname of your [Media API](https://github.com/literal-life-church/media-api) instance. No protocol, no trailing path (e.g. `api.example.com`). |
+| `data-error-message` | No | `string` (Markdown) | `We were not able to load any information about this event. Please contact the site owner.` | Message displayed when the player fails to load event data. Supports Markdown. Multi-line values are supported via [multi-line HTML attributes](https://stackoverflow.com/a/38880984). |
 | `data-offline-message` | No | `string` (Markdown) | `This event is offline.` | Message displayed when the event is offline. Supports Markdown. Multi-line values are supported via [multi-line HTML attributes](https://stackoverflow.com/a/38880984). |
 | `data-prewarming-message` | No | `string` (Markdown) | `We are getting ready to go live very soon. Please stay tuned.` | Message displayed when the event is prewarming (created on YouTube but not yet broadcasting). Supports Markdown. Multi-line values are supported via [multi-line HTML attributes](https://stackoverflow.com/a/38880984). |
 
 ## Player States
 
-The player can fall into one of 4 possible states as detailed in the subsequent sections. In each situation, the player modifies the container's classes and `data-` attributes and, in some cases, injects structured content so you have fine-grained styling control and better semantic meaning for this content.
+The player can fall into one of 6 possible states as detailed in the subsequent sections. In each situation, the player modifies the container's classes and `data-` attributes and, in some cases, injects structured content so you have fine-grained styling control and better semantic meaning for this content.
+
+Every state transition also triggers a CSS `player-fade-in` animation on the newly inserted content. The animation is defined in `styles.css`, which you can include as-is or use as a reference for your own styles.
 
 You can observe a few examples of how to use these classes inside of the `styles.css` example file.
+
+### Loading
+
+The loading state is active immediately on page load while the player waits for the backend to respond.
+
+#### Container modifications
+
+| Attribute | Value | Description |
+| --- | --- | --- |
+| `class` | `player-loading player-uninitialized` | Added to the container's class list. |
+| `data-error` | `false` | Reflects whether the player encountered an error. |
+| `data-initialized` | `false` | Reflects whether the player has finished initializing. |
+| `data-player-loading` | *(empty)* | Present while the player is loading. |
+| `data-status` | `loading` | Reflects the current player status. |
+
+#### CSS classes
+
+| Class | Element | Description |
+| --- | --- | --- |
+| `loading-container` | `<div>` | Wraps the animated puff spinner shown while the player loads. |
+
+---
 
 ### Offline
 
@@ -69,8 +93,10 @@ When the backend returns `status: "offline"`, the player enters the offline stat
 
 | Attribute | Value | Description |
 | --- | --- | --- |
-| `class` | `event-offline` | Added to the container's class list. |
+| `class` | `event-offline player-initialized` | Added to the container's class list. |
+| `data-error` | `false` | Reflects whether the player encountered an error. |
 | `data-event-offline` | *(empty)* | Present when the event is in the offline state. |
+| `data-initialized` | `true` | Reflects whether the player has finished initializing. |
 | `data-status` | `offline` | Reflects the current player status. |
 
 #### CSS classes
@@ -89,8 +115,10 @@ When the backend returns `status: "prewarming"`, the player enters the prewarmin
 
 | Attribute | Value | Description |
 | --- | --- | --- |
-| `class` | `event-prewarming` | Added to the container's class list. |
+| `class` | `event-prewarming player-initialized` | Added to the container's class list. |
+| `data-error` | `false` | Reflects whether the player encountered an error. |
 | `data-event-prewarming` | *(empty)* | Present when the event is in the prewarming state. |
+| `data-initialized` | `true` | Reflects whether the player has finished initializing. |
 | `data-status` | `prewarming` | Reflects the current player status. |
 
 #### CSS classes
@@ -109,8 +137,10 @@ When the backend returns `status: "live"`, the player enters the live state and 
 
 | Attribute | Value | Description |
 | --- | --- | --- |
-| `class` | `event-live` | Added to the container's class list. |
+| `class` | `event-live player-initialized` | Added to the container's class list. |
+| `data-error` | `false` | Reflects whether the player encountered an error. |
 | `data-event-live` | *(empty)* | Present when the event is in the live state. |
+| `data-initialized` | `true` | Reflects whether the player has finished initializing. |
 | `data-status` | `live` | Reflects the current player status. |
 
 #### CSS classes
@@ -131,8 +161,10 @@ The following attributes are added to the outer container `<div>` when the cance
 
 | Attribute | Value | Description |
 | --- | --- | --- |
-| `class` | `event-canceled` | Added to the container's class list. |
+| `class` | `event-canceled player-initialized` | Added to the container's class list. |
+| `data-error` | `false` | Reflects whether the player encountered an error. |
 | `data-event-canceled` | *(empty)* | Present when the event is in the canceled state. |
+| `data-initialized` | `true` | Reflects whether the player has finished initializing. |
 | `data-status` | `canceled` | Reflects the current player status. |
 
 #### CSS classes
@@ -148,3 +180,25 @@ All content is injected inside the container and can be targeted with the follow
 | `event-canceled-original-schedule-label` | `<span>` | The "Originally scheduled for: " label within the schedule paragraph. |
 | `event-canceled-original-schedule-time` | `<span>` | The formatted date and time within the schedule paragraph. |
 | `event-canceled-reason` | `<div>` | Contains the Markdown-rendered reason for cancellation directly below the originally scheduled time. |
+
+---
+
+### Error
+
+The error state is entered when the player fails to reach the backend or receives an unparseable response.
+
+#### Container modifications
+
+| Attribute | Value | Description |
+| --- | --- | --- |
+| `class` | `player-error player-uninitialized` | Added to the container's class list. |
+| `data-error` | `true` | Reflects whether the player encountered an error. |
+| `data-initialized` | `false` | Reflects whether the player has finished initializing. |
+| `data-player-error` | *(empty)* | Present when the player has encountered an error. |
+| `data-status` | `error` | Reflects the current player status. |
+
+#### CSS classes
+
+| Class | Element | Description |
+| --- | --- | --- |
+| `error-container` | `<div>` | Wraps the Markdown-rendered error message set by `data-error-message`. |

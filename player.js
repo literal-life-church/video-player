@@ -35,20 +35,22 @@ function resetContainerState(container) {
         "player-initialized", "player-loading", "player-uninitialized"
     );
 
+    delete container.dataset.error;
+    delete container.dataset.eventCanceled;
+    delete container.dataset.eventLive;
+    delete container.dataset.eventOffline;
+    delete container.dataset.eventPrewarming;
+    delete container.dataset.initialized;
+    delete container.dataset.playerError;
+    delete container.dataset.playerLoading;
     delete container.dataset.status;
-    container.removeAttribute("data-event-canceled");
-    container.removeAttribute("data-event-live");
-    container.removeAttribute("data-event-offline");
-    container.removeAttribute("data-event-prewarming");
-    container.removeAttribute("data-initialized");
-    container.removeAttribute("data-player-loading");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     // region Configuration Defaults
 
     const CONTAINER_ID = "literal-life-church-video-player";
-    const DEFAULT_ASPECT_RATIO = "16 / 9";
+    const DEFAULT_ERROR_MESSAGE = "We were not able to load any information about this event. Please contact the site owner.";
     const DEFAULT_OFFLINE_MESSAGE = "This event is offline.";
     const DEFAULT_PREWARMING_MESSAGE = "We are getting ready to go live very soon. Please stay tuned.";
     const LOADING_SVG = `<svg width="80" height="80" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" stroke="currentColor"><g fill="none" fill-rule="evenodd" stroke-width="2"><circle cx="22" cy="22" r="1"><animate attributeName="r" begin="0s" dur="1.8s" values="1; 20" calcMode="spline" keyTimes="0; 1" keySplines="0.165, 0.84, 0.44, 1" repeatCount="indefinite"/><animate attributeName="stroke-opacity" begin="0s" dur="1.8s" values="1; 0" calcMode="spline" keyTimes="0; 1" keySplines="0.3, 0.61, 0.355, 1" repeatCount="indefinite"/></circle><circle cx="22" cy="22" r="1"><animate attributeName="r" begin="-0.9s" dur="1.8s" values="1; 20" calcMode="spline" keyTimes="0; 1" keySplines="0.165, 0.84, 0.44, 1" repeatCount="indefinite"/><animate attributeName="stroke-opacity" begin="-0.9s" dur="1.8s" values="1; 0" calcMode="spline" keyTimes="0; 1" keySplines="0.3, 0.61, 0.355, 1" repeatCount="indefinite"/></circle></g></svg>`;
@@ -79,9 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // region Optional Configuration
 
-    const aspectRatio = container.dataset.aspectRatio || DEFAULT_ASPECT_RATIO;
-    container.style.aspectRatio = aspectRatio;
-
+    const errorMessage = container.dataset.errorMessage?.trim() || DEFAULT_ERROR_MESSAGE;
     const offlineMessage = container.dataset.offlineMessage?.trim() || DEFAULT_OFFLINE_MESSAGE;
     const prewarmingMessage = container.dataset.prewarmingMessage?.trim() || DEFAULT_PREWARMING_MESSAGE;
 
@@ -90,9 +90,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // region Loading State
 
     container.classList.add("player-loading", "player-uninitialized");
+    container.dataset.error = "false";
     container.dataset.initialized = "false";
+    container.dataset.playerLoading = "";
     container.dataset.status = "loading";
-    container.setAttribute("data-player-loading", "");
 
     const loadingContainer = document.createElement("div");
     loadingContainer.className = "loading-container";
@@ -106,14 +107,18 @@ document.addEventListener("DOMContentLoaded", () => {
     fetch(apiEndpoint)
         .then((response) => response.json())
         .then(async (data) => {
+            resetContainerState(container);
+
+            container.classList.add("player-initialized");
+            container.dataset.error = "false";
+            container.dataset.initialized = "true";
+
             if (data.status === "offline") {
                 await loadScript(MARKED_URL);
-                resetContainerState(container);
 
-                container.classList.add("event-offline", "player-initialized");
-                container.dataset.initialized = "true";
+                container.classList.add("event-offline");
+                container.dataset.eventOffline = "";
                 container.dataset.status = "offline";
-                container.setAttribute("data-event-offline", "");
 
                 const messageContainer = document.createElement("div");
                 messageContainer.className = "message-container message-event-offline-container";
@@ -123,12 +128,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 container.appendChild(messageContainer);
             } else if (data.status === "prewarming") {
                 await loadScript(MARKED_URL);
-                resetContainerState(container);
 
-                container.classList.add("player-initialized", "event-prewarming");
-                container.dataset.initialized = "true";
+                container.classList.add("event-prewarming");
+                container.dataset.eventPrewarming = "";
                 container.dataset.status = "prewarming";
-                container.setAttribute("data-event-prewarming", "");
 
                 const messageContainer = document.createElement("div");
                 messageContainer.className = "message-container message-event-prewarming-container";
@@ -138,34 +141,24 @@ document.addEventListener("DOMContentLoaded", () => {
                 container.appendChild(messageContainer);
             } else if (data.status === "canceled") {
                 await loadScript(MARKED_URL);
-                resetContainerState(container);
 
-                container.classList.add("event-canceled", "player-initialized");
-                container.dataset.initialized = "true";
+                container.classList.add("event-canceled");
+                container.dataset.eventCanceled = "";
                 container.dataset.status = "canceled";
-                container.setAttribute("data-event-canceled", "");
 
                 const messageContainer = document.createElement("div");
                 messageContainer.className = "message-container message-event-canceled-container";
-                messageContainer.style.textAlign = "left";
 
                 const balloon = document.createElement("span");
                 balloon.className = "event-canceled-status-balloon";
-                balloon.style.backgroundColor = "#CCCCCC";
-                balloon.style.borderRadius = "0.365rem";
-                balloon.style.fontSize = "0.75rem";
-                balloon.style.padding = "0.2rem 0.4rem";
                 balloon.textContent = "Canceled";
 
                 const title = document.createElement("h1");
                 title.className = "event-canceled-name";
-                title.style.margin = "0.5rem 0";
                 title.textContent = data.cancellation.name;
 
                 const schedule = document.createElement("p");
                 schedule.className = "event-canceled-original-schedule";
-                schedule.style.margin = "0";
-                schedule.style.paddingBottom = "1rem";
 
                 const scheduleLabel = document.createElement("span");
                 scheduleLabel.className = "event-canceled-original-schedule-label";
@@ -190,12 +183,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 container.innerHTML = "";
                 container.appendChild(messageContainer);
             } else if (data.status === "live") {
-                resetContainerState(container);
 
-                container.classList.add("event-live", "player-initialized");
-                container.dataset.initialized = "true";
+                container.classList.add("event-live");
+                container.dataset.eventLive = "";
                 container.dataset.status = "live";
-                container.setAttribute("data-event-live", "");
 
                 const iframe = document.createElement("iframe");
                 iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
@@ -203,14 +194,29 @@ document.addEventListener("DOMContentLoaded", () => {
                 iframe.className = "player-container";
                 iframe.setAttribute("frameborder", "0");
                 iframe.src = data.event.embedUrl;
-                iframe.style.border = "0";
-                iframe.style.height = "100%";
-                iframe.style.width = "100%";
                 iframe.title = data.event.name;
 
                 container.innerHTML = "";
                 container.appendChild(iframe);
             }
         })
-        .catch((error) => console.error(error));
+        .catch(async (error) => {
+            console.error(error);
+
+            await loadScript(MARKED_URL);
+            resetContainerState(container);
+
+            container.classList.add("player-error", "player-uninitialized");
+            container.dataset.error = "true";
+            container.dataset.initialized = "false";
+            container.dataset.playerError = "";
+            container.dataset.status = "error";
+
+            const errorContainer = document.createElement("div");
+            errorContainer.className = "error-container";
+            errorContainer.innerHTML = marked.parse(errorMessage);
+
+            container.innerHTML = "";
+            container.appendChild(errorContainer);
+        });
 });
