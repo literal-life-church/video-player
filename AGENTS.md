@@ -59,3 +59,13 @@ The player has 6 states: `loading` (shown immediately while the API call is in f
 The Media API endpoint used by this library is `https://<data-backend-host>/live-streaming`.
 
 The host is supplied by the consumer via the `data-backend-host` attribute. For the full attribute reference, see the README.
+
+### Server-Sent Event (SSE) Subscription
+
+After the initial fetch resolves, the library opens an `EventSource` to `https://<data-backend-host>/live-streaming/subscribe` and listens for one of two events: `event.state_transition` and `event.close_connection`. The data with `event.state_transition` contains the exact same payload as `https://<data-backend-host>/live-streaming` and is used to immediately issue updates to the client when the live event transitions its state.
+
+The `event.close_connection` is issued by the server to ask the client to close the connection. This approach is taken instead of issuing a 204 because the server cannot tell if the client is a new user sitting on a page with an `offline` event, waiting for it to go online, or if they were present when the state went from `live` to `offline`. We _only_ want to force a disconnection in the second scenario, not for all `offline` events.
+
+All UI rendering for both the initial load and SSE transitions is handled by the inner `renderState(data)` async function defined inside the `DOMContentLoaded` callback. Any future state changes to the UI must go through this function — do not add inline rendering logic to the fetch handler or the SSE listener.
+
+The client never explicitly closes the `EventSource`; the server controls connection lifetime.
