@@ -52,10 +52,18 @@ loadScript("https://cdn.jsdelivr.net/npm/<package>@<version>/<file>")
 
 ## Player States
 
-Each API status (`offline`, `prewarming`, `live`, `canceled`) has a corresponding branch in the `fetch` handler in `player.js`. Some states apply classes, data attributes, and CSS hooks to the container or injected content to give the implementing page styling control and better semantic meaning. For the full reference on what each state injects and which CSS classes are available, see the **Player States** section of the README.
+The player has 6 states: `loading` (shown immediately while the API call is in flight), `offline`, `prewarming`, `live`, `canceled`, and `error` (shown when the fetch fails). Each has a corresponding branch in `player.js` — `loading` is set up before the `fetch` call; `error` is handled in the `.catch()`. All states stamp `data-error` and `data-initialized` on the container; successful states (`offline`, `prewarming`, `live`, `canceled`) also add `player-initialized` to the class list. For the full reference on what each state injects and which CSS classes are available, see the **Player States** section of the README.
 
 ## Backend
 
 The Media API endpoint used by this library is `https://<data-backend-host>/live-streaming`.
 
 The host is supplied by the consumer via the `data-backend-host` attribute. For the full attribute reference, see the README.
+
+### Server-Sent Event (SSE) Subscription
+
+After the initial fetch resolves, the library opens an `EventSource` to `https://<data-backend-host>/live-streaming/subscribe` and listens for one of two events: `event.state_transition` or `event.close_connection`.
+
+The data with `event.state_transition` contains the exact same payload as `https://<data-backend-host>/live-streaming` and is used to immediately issue updates to the client when the live event transitions its state. All UI rendering for both the initial load and SSE transitions is handled by the inner `renderState(data)` async function defined inside the `DOMContentLoaded` callback. Any future state changes to the UI must go through this function — do not add inline rendering logic to the fetch handler or the SSE listener.
+
+The `event.close_connection` is issued by the server to ask the client to close the connection. This approach is taken instead of issuing a 204 because the server cannot tell if the client is a new user sitting on a page with an `offline` event, waiting for it to go online, or if they were present when the state went from `live` to `offline`. We _only_ want to force a disconnection in the second scenario, not for all `offline` events.

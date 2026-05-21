@@ -30,24 +30,34 @@ function formatEventDate(isoString) {
 }
 
 function resetContainerState(container) {
-    container.classList.remove("event-canceled", "event-offline", "event-live", "event-prewarming");
-    delete container.dataset.status;
+    container.classList.remove(
+        "event-canceled", "event-offline", "event-live", "event-prewarming",
+        "player-initialized", "player-loading", "player-uninitialized"
+    );
 
-    container.removeAttribute("data-event-canceled");
-    container.removeAttribute("data-event-live");
-    container.removeAttribute("data-event-offline");
-    container.removeAttribute("data-event-prewarming");
+    delete container.dataset.error;
+    delete container.dataset.eventCanceled;
+    delete container.dataset.eventLive;
+    delete container.dataset.eventOffline;
+    delete container.dataset.eventPrewarming;
+    delete container.dataset.initialized;
+    delete container.dataset.playerError;
+    delete container.dataset.playerLoading;
+    delete container.dataset.status;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     // region Configuration Defaults
 
     const CONTAINER_ID = "literal-life-church-video-player";
-    const DEFAULT_ASPECT_RATIO = "16 / 9";
+    const DEFAULT_ERROR_MESSAGE = "We were not able to load any information about this event. Please contact the site owner.";
     const DEFAULT_OFFLINE_MESSAGE = "This event is offline.";
     const DEFAULT_PREWARMING_MESSAGE = "We are getting ready to go live very soon. Please stay tuned.";
+    const LOADING_SVG = `<svg width="80" height="80" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" stroke="currentColor"><g fill="none" fill-rule="evenodd" stroke-width="2"><circle cx="22" cy="22" r="1"><animate attributeName="r" begin="0s" dur="1.8s" values="1; 20" calcMode="spline" keyTimes="0; 1" keySplines="0.165, 0.84, 0.44, 1" repeatCount="indefinite"/><animate attributeName="stroke-opacity" begin="0s" dur="1.8s" values="1; 0" calcMode="spline" keyTimes="0; 1" keySplines="0.3, 0.61, 0.355, 1" repeatCount="indefinite"/></circle><circle cx="22" cy="22" r="1"><animate attributeName="r" begin="-0.9s" dur="1.8s" values="1; 20" calcMode="spline" keyTimes="0; 1" keySplines="0.165, 0.84, 0.44, 1" repeatCount="indefinite"/><animate attributeName="stroke-opacity" begin="-0.9s" dur="1.8s" values="1; 0" calcMode="spline" keyTimes="0; 1" keySplines="0.3, 0.61, 0.355, 1" repeatCount="indefinite"/></circle></g></svg>`;
     const LOGGING_TAG = "[Literal Life Church Video Player]";
     const MARKED_URL = "https://cdn.jsdelivr.net/npm/marked@18.0.0/lib/marked.umd.min.js";
+    const SSE_CLOSE_EVENT_NAME = "event.close_connection";
+    const SSE_STATE_TRANSITION_EVENT_NAME = "event.state_transition";
 
     // endregion
 
@@ -68,123 +78,165 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const apiEndpoint = `https://${backendHost}/live-streaming`;
+    const sseEndpoint = `https://${backendHost}/live-streaming/subscribe`;
 
     // endregion
 
     // region Optional Configuration
 
-    const aspectRatio = container.dataset.aspectRatio || DEFAULT_ASPECT_RATIO;
-    container.style.aspectRatio = aspectRatio;
-
+    const errorMessage = container.dataset.errorMessage?.trim() || DEFAULT_ERROR_MESSAGE;
     const offlineMessage = container.dataset.offlineMessage?.trim() || DEFAULT_OFFLINE_MESSAGE;
     const prewarmingMessage = container.dataset.prewarmingMessage?.trim() || DEFAULT_PREWARMING_MESSAGE;
+
+    // endregion
+
+    // region State Rendering
+
+    const renderState = async (data) => {
+        resetContainerState(container);
+
+        container.classList.add("player-initialized");
+        container.dataset.error = "false";
+        container.dataset.initialized = "true";
+
+        if (data.status === "offline") {
+            if (!window.marked) await loadScript(MARKED_URL);
+
+            container.classList.add("event-offline");
+            container.dataset.eventOffline = "";
+            container.dataset.status = "offline";
+
+            const messageContainer = document.createElement("div");
+            messageContainer.className = "message-container message-event-offline-container";
+            messageContainer.innerHTML = marked.parse(offlineMessage);
+
+            container.innerHTML = "";
+            container.appendChild(messageContainer);
+        } else if (data.status === "prewarming") {
+            if (!window.marked) await loadScript(MARKED_URL);
+
+            container.classList.add("event-prewarming");
+            container.dataset.eventPrewarming = "";
+            container.dataset.status = "prewarming";
+
+            const messageContainer = document.createElement("div");
+            messageContainer.className = "message-container message-event-prewarming-container";
+            messageContainer.innerHTML = marked.parse(prewarmingMessage);
+
+            container.innerHTML = "";
+            container.appendChild(messageContainer);
+        } else if (data.status === "canceled") {
+            if (!window.marked) await loadScript(MARKED_URL);
+
+            container.classList.add("event-canceled");
+            container.dataset.eventCanceled = "";
+            container.dataset.status = "canceled";
+
+            const messageContainer = document.createElement("div");
+            messageContainer.className = "message-container message-event-canceled-container";
+
+            const balloon = document.createElement("span");
+            balloon.className = "event-canceled-status-balloon";
+            balloon.textContent = "Canceled";
+
+            const title = document.createElement("h1");
+            title.className = "event-canceled-name";
+            title.textContent = data.cancellation.name;
+
+            const schedule = document.createElement("p");
+            schedule.className = "event-canceled-original-schedule";
+
+            const scheduleLabel = document.createElement("span");
+            scheduleLabel.className = "event-canceled-original-schedule-label";
+            scheduleLabel.textContent = "Originally scheduled for: ";
+
+            const scheduleTime = document.createElement("span");
+            scheduleTime.className = "event-canceled-original-schedule-time";
+            scheduleTime.textContent = formatEventDate(data.cancellation.timeOfEvent);
+
+            schedule.appendChild(scheduleLabel);
+            schedule.appendChild(scheduleTime);
+
+            const reason = document.createElement("div");
+            reason.className = "event-canceled-reason";
+            reason.innerHTML = marked.parse(data.cancellation.reason);
+
+            messageContainer.appendChild(balloon);
+            messageContainer.appendChild(title);
+            messageContainer.appendChild(schedule);
+            messageContainer.appendChild(reason);
+
+            container.innerHTML = "";
+            container.appendChild(messageContainer);
+        } else if (data.status === "live") {
+            container.classList.add("event-live");
+            container.dataset.eventLive = "";
+            container.dataset.status = "live";
+
+            const iframe = document.createElement("iframe");
+            iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+            iframe.allowFullscreen = true;
+            iframe.className = "player-container";
+            iframe.setAttribute("frameborder", "0");
+            iframe.src = data.event.embedUrl;
+            iframe.title = data.event.name;
+
+            container.innerHTML = "";
+            container.appendChild(iframe);
+        }
+    };
+
+    // endregion
+
+    // region Loading State
+
+    container.classList.add("player-loading", "player-uninitialized");
+    container.dataset.error = "false";
+    container.dataset.initialized = "false";
+    container.dataset.playerLoading = "";
+    container.dataset.status = "loading";
+
+    const loadingContainer = document.createElement("div");
+    loadingContainer.className = "loading-container";
+    loadingContainer.innerHTML = LOADING_SVG;
+
+    container.innerHTML = "";
+    container.appendChild(loadingContainer);
 
     // endregion
 
     fetch(apiEndpoint)
         .then((response) => response.json())
         .then(async (data) => {
-            if (data.status === "offline") {
-                await loadScript(MARKED_URL);
-                resetContainerState(container);
+            await renderState(data);
 
-                container.classList.add("event-offline");
-                container.dataset.status = "offline";
-                container.setAttribute("data-event-offline", "");
+            const eventSource = new EventSource(sseEndpoint);
 
-                const messageContainer = document.createElement("div");
-                messageContainer.className = "message-container message-event-offline-container";
-                messageContainer.innerHTML = marked.parse(offlineMessage);
+            eventSource.addEventListener(SSE_STATE_TRANSITION_EVENT_NAME, async (event) => {
+                await renderState(JSON.parse(event.data));
+            });
 
-                container.innerHTML = "";
-                container.appendChild(messageContainer);
-            } else if (data.status === "prewarming") {
-                await loadScript(MARKED_URL);
-                resetContainerState(container);
-
-                container.classList.add("event-prewarming");
-                container.dataset.status = "prewarming";
-                container.setAttribute("data-event-prewarming", "");
-
-                const messageContainer = document.createElement("div");
-                messageContainer.className = "message-container message-event-prewarming-container";
-                messageContainer.innerHTML = marked.parse(prewarmingMessage);
-
-                container.innerHTML = "";
-                container.appendChild(messageContainer);
-            } else if (data.status === "canceled") {
-                await loadScript(MARKED_URL);
-                resetContainerState(container);
-
-                container.classList.add("event-canceled");
-                container.dataset.status = "canceled";
-                container.setAttribute("data-event-canceled", "");
-
-                const messageContainer = document.createElement("div");
-                messageContainer.className = "message-container message-event-canceled-container";
-                messageContainer.style.textAlign = "left";
-
-                const balloon = document.createElement("span");
-                balloon.className = "event-canceled-status-balloon";
-                balloon.style.backgroundColor = "#CCCCCC";
-                balloon.style.borderRadius = "0.365rem";
-                balloon.style.fontSize = "0.75rem";
-                balloon.style.padding = "0.2rem 0.4rem";
-                balloon.textContent = "Canceled";
-
-                const title = document.createElement("h1");
-                title.className = "event-canceled-name";
-                title.style.margin = "0.5rem 0";
-                title.textContent = data.cancellation.name;
-
-                const schedule = document.createElement("p");
-                schedule.className = "event-canceled-original-schedule";
-                schedule.style.margin = "0";
-                schedule.style.paddingBottom = "1rem";
-
-                const scheduleLabel = document.createElement("span");
-                scheduleLabel.className = "event-canceled-original-schedule-label";
-                scheduleLabel.textContent = "Originally scheduled for: ";
-
-                const scheduleTime = document.createElement("span");
-                scheduleTime.className = "event-canceled-original-schedule-time";
-                scheduleTime.textContent = formatEventDate(data.cancellation.timeOfEvent);
-
-                schedule.appendChild(scheduleLabel);
-                schedule.appendChild(scheduleTime);
-
-                const reason = document.createElement("div");
-                reason.className = "event-canceled-reason";
-                reason.innerHTML = marked.parse(data.cancellation.reason);
-
-                messageContainer.appendChild(balloon);
-                messageContainer.appendChild(title);
-                messageContainer.appendChild(schedule);
-                messageContainer.appendChild(reason);
-
-                container.innerHTML = "";
-                container.appendChild(messageContainer);
-            } else if (data.status === "live") {
-                resetContainerState(container);
-
-                container.classList.add("event-live");
-                container.dataset.status = "live";
-                container.setAttribute("data-event-live", "");
-
-                const iframe = document.createElement("iframe");
-                iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-                iframe.allowFullscreen = true;
-                iframe.className = "player-container";
-                iframe.setAttribute("frameborder", "0");
-                iframe.src = data.event.embedUrl;
-                iframe.style.border = "0";
-                iframe.style.height = "100%";
-                iframe.style.width = "100%";
-                iframe.title = data.event.name;
-
-                container.innerHTML = "";
-                container.appendChild(iframe);
-            }
+            eventSource.addEventListener(SSE_CLOSE_EVENT_NAME, () => {
+                eventSource.close();
+            });
         })
-        .catch((error) => console.error(error));
+        .catch(async (error) => {
+            console.error(error);
+
+            await loadScript(MARKED_URL);
+            resetContainerState(container);
+
+            container.classList.add("player-error", "player-uninitialized");
+            container.dataset.error = "true";
+            container.dataset.initialized = "false";
+            container.dataset.playerError = "";
+            container.dataset.status = "error";
+
+            const errorContainer = document.createElement("div");
+            errorContainer.className = "error-container";
+            errorContainer.innerHTML = marked.parse(errorMessage);
+
+            container.innerHTML = "";
+            container.appendChild(errorContainer);
+        });
 });
