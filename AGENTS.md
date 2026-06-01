@@ -49,6 +49,7 @@ loadScript("https://cdn.jsdelivr.net/npm/<package>@<version>/<file>")
 | Library | CDN URL | `window` global | Purpose |
 | --- | --- | --- | --- |
 | [Marked](https://marked.js.org/) | `https://cdn.jsdelivr.net/npm/marked@18.0.0/lib/marked.umd.min.js` | `window.marked` | Parse Markdown content returned by the Media API |
+| [OneSignal Web Push SDK](https://onesignal.com/webpush) | `https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js` | `window.OneSignal` (via `window.OneSignalDeferred`) | Web Push notification opt-in |
 
 ## Player States
 
