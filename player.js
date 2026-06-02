@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error(`${LOGGING_TAG} Push notifications will be disabled: missing required data-push-notification-app-id and data-push-notification-safari-web-id attributes on the element with id="${CONTAINER_ID}".`);
     }
 
-    const pushNotificationsEnabled = !!pushNotificationAppId;
+    let pushNotificationsEnabled = !!pushNotificationAppId;
 
     // endregion
 
@@ -189,6 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             container.innerHTML = "";
             container.appendChild(messageContainer);
+
             appendPushButton(messageContainer);
         } else if (data.status === "prewarming") {
             if (!window.marked) await loadScript(MARKED_URL);
@@ -203,6 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             container.innerHTML = "";
             container.appendChild(messageContainer);
+
             appendPushButton(messageContainer);
         } else if (data.status === "canceled") {
             if (!window.marked) await loadScript(MARKED_URL);
@@ -247,6 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             container.innerHTML = "";
             container.appendChild(messageContainer);
+
             appendPushButton(messageContainer);
         } else if (data.status === "live") {
             container.classList.add("event-live");
@@ -288,50 +291,55 @@ document.addEventListener("DOMContentLoaded", () => {
     fetch(apiEndpoint)
         .then((response) => response.json())
         .then(async (data) => {
-            if (pushNotificationsEnabled) {
-                await loadScript(ONESIGNAL_URL);
+            try {
+                if (pushNotificationsEnabled) {
+                    await loadScript(ONESIGNAL_URL);
 
-                await new Promise((resolve) => {
-                    window.OneSignalDeferred = window.OneSignalDeferred || [];
-                    window.OneSignalDeferred.push(async (OneSignal) => {
-                        await OneSignal.init({
-                            appId: pushNotificationAppId,
-                            safari_web_id: pushNotificationSafariWebId,
-                            autoResubscribe: AUTO_RESUBSCRIBE,
-                            notifyButton: { enable: ENABLE_NOTIFY_BUTTON },
-                            persistNotification: pushNotificationPersist,
-                            promptOptions: {
-                                slidedown: {
-                                    prompts: [{
-                                        type: PROMPT_TYPE,
-                                        autoPrompt: AUTO_PROMPT,
-                                        text: {
-                                            actionMessage: pushNotificationNewOptInPromptMessage,
-                                            acceptButton: pushNotificationNewOptInAcceptButtonLabel,
-                                            cancelButton: pushNotificationNewOptInCancelButtonLabel,
-                                            updateMessage: pushNotificationUpdateOptInPromptMessage,
-                                            positiveUpdateButton: pushNotificationUpdateOptInAcceptButtonLabel,
-                                            negativeUpdateButton: pushNotificationUpdateOptInCancelButtonLabel
-                                        },
-                                        categories: [
-                                            { tag: GO_LIVE_CATEGORY_TAG_NAME, label: pushNotificationSegmentGoLiveLabel },
-                                            { tag: SCHEDULE_UPDATES_CATEGORY_TAG_NAME, label: pushNotificationSegmentScheduleUpdatesLabel }
-                                        ]
-                                    }]
+                    await new Promise((resolve) => {
+                        window.OneSignalDeferred = window.OneSignalDeferred || [];
+                        window.OneSignalDeferred.push(async (OneSignal) => {
+                            await OneSignal.init({
+                                appId: pushNotificationAppId,
+                                safari_web_id: pushNotificationSafariWebId,
+                                autoResubscribe: AUTO_RESUBSCRIBE,
+                                notifyButton: { enable: ENABLE_NOTIFY_BUTTON },
+                                persistNotification: pushNotificationPersist,
+                                promptOptions: {
+                                    slidedown: {
+                                        prompts: [{
+                                            type: PROMPT_TYPE,
+                                            autoPrompt: AUTO_PROMPT,
+                                            text: {
+                                                actionMessage: pushNotificationNewOptInPromptMessage,
+                                                acceptButton: pushNotificationNewOptInAcceptButtonLabel,
+                                                cancelButton: pushNotificationNewOptInCancelButtonLabel,
+                                                updateMessage: pushNotificationUpdateOptInPromptMessage,
+                                                positiveUpdateButton: pushNotificationUpdateOptInAcceptButtonLabel,
+                                                negativeUpdateButton: pushNotificationUpdateOptInCancelButtonLabel
+                                            },
+                                            categories: [
+                                                { tag: GO_LIVE_CATEGORY_TAG_NAME, label: pushNotificationSegmentGoLiveLabel },
+                                                { tag: SCHEDULE_UPDATES_CATEGORY_TAG_NAME, label: pushNotificationSegmentScheduleUpdatesLabel }
+                                            ]
+                                        }]
+                                    }
+                                },
+                                serviceWorkerParam: { scope: pushNotificationScope },
+                                serviceWorkerPath: pushNotificationServiceWorkerPath,
+                                welcomeNotification: {
+                                    disable: !pushNotificationWelcomeNotification,
+                                    title: pushNotificationWelcomeNotificationTitle,
+                                    message: pushNotificationWelcomeNotificationMessage
                                 }
-                            },
-                            serviceWorkerParam: { scope: pushNotificationScope },
-                            serviceWorkerPath: pushNotificationServiceWorkerPath,
-                            welcomeNotification: {
-                                disable: !pushNotificationWelcomeNotification,
-                                title: pushNotificationWelcomeNotificationTitle,
-                                message: pushNotificationWelcomeNotificationMessage
-                            }
-                        });
+                            });
 
-                        resolve();
+                            resolve();
+                        });
                     });
-                });
+                }
+            } catch (error) {
+                console.warn(`${LOGGING_TAG} The OneSignal push notification SDK could not be loaded. Push notifications have been disabled. This could be due to an ad-blocker preventing the script from loading or a misconfigured OneSignal setup.`, error);
+                pushNotificationsEnabled = false;
             }
 
             await renderState(data);
