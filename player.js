@@ -75,9 +75,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const AUTO_PROMPT = false;
     const AUTO_RESUBSCRIBE = true;
     const ENABLE_NOTIFY_BUTTON = false;
-    const GO_LIVE_CATEGORY_TAG_NAME = "go_live";
+    const GO_LIVE_SEGMENT_TAG_NAME = "go_live";
     const PROMPT_TYPE = "category";
-    const SCHEDULE_UPDATES_CATEGORY_TAG_NAME = "schedule_updates";
+    const SCHEDULE_UPDATES_SEGMENT_TAG_NAME = "schedule_updates";
 
     // SSE event names
     const SSE_CLOSE_EVENT_NAME = "event.close_connection";
@@ -317,9 +317,9 @@ document.addEventListener("DOMContentLoaded", () => {
                                                 positiveUpdateButton: pushNotificationUpdateOptInAcceptButtonLabel,
                                                 negativeUpdateButton: pushNotificationUpdateOptInCancelButtonLabel
                                             },
-                                            categories: [
-                                                { tag: GO_LIVE_CATEGORY_TAG_NAME, label: pushNotificationSegmentGoLiveLabel },
-                                                { tag: SCHEDULE_UPDATES_CATEGORY_TAG_NAME, label: pushNotificationSegmentScheduleUpdatesLabel }
+                                            segments: [
+                                                { tag: GO_LIVE_SEGMENT_TAG_NAME, label: pushNotificationSegmentGoLiveLabel },
+                                                { tag: SCHEDULE_UPDATES_SEGMENT_TAG_NAME, label: pushNotificationSegmentScheduleUpdatesLabel }
                                             ]
                                         }]
                                     }
