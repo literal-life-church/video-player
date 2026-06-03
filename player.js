@@ -332,7 +332,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                                 positiveUpdateButton: pushNotificationUpdateOptInAcceptButtonLabel,
                                                 negativeUpdateButton: pushNotificationUpdateOptInCancelButtonLabel
                                             },
-                                            segments: [
+                                            categories: [
                                                 { tag: GO_LIVE_SEGMENT_TAG_NAME, label: pushNotificationSegmentGoLiveLabel },
                                                 { tag: SCHEDULE_UPDATES_SEGMENT_TAG_NAME, label: pushNotificationSegmentScheduleUpdatesLabel }
                                             ]
