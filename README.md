@@ -66,8 +66,8 @@ If you want to embed this player onto your webpage, follow these steps. Keep in 
 | `data-error-message` | No | `string` (Markdown) | `We were not able to load any information about this event. Please contact the site owner.` | Message displayed when the player fails to load event data. Supports Markdown. Multi-line values are supported via [multi-line HTML attributes](https://stackoverflow.com/a/38880984). |
 | `data-offline-message` | No | `string` (Markdown) | `This event is offline.` | Message displayed when the event is offline. Supports Markdown. Multi-line values are supported via [multi-line HTML attributes](https://stackoverflow.com/a/38880984). |
 | `data-prewarming-message` | No | `string` (Markdown) | `We are getting ready to go live very soon. Please stay tuned.` | Message displayed when the event is prewarming (created on YouTube but not yet broadcasting). Supports Markdown. Multi-line values are supported via [multi-line HTML attributes](https://stackoverflow.com/a/38880984). |
-| `data-push-notification-app-id` | No* | `string` | — | OneSignal application ID. **Required to enable push notifications alongside `data-push-notification-safari-web-id`.** <br><br> (*) If absent (or if loading the OneSignal SDK fails), the entire push notification experience is silently disabled. |
-| `data-push-notification-safari-web-id` | No* | `string` | — | OneSignal Safari web ID. **Required to enable push notifications alongside `data-push-notification-app-id`.** <br><br> (*) If absent (or if loading the OneSignal SDK fails), the entire push notification experience is silently disabled. |
+| `data-push-notification-app-id` | No* | `string` | — | OneSignal application ID. **Required to enable push notifications alongside `data-push-notification-safari-web-id`.** |
+| `data-push-notification-safari-web-id` | No* | `string` | — | OneSignal Safari web ID. **Required to enable push notifications alongside `data-push-notification-app-id`.** |
 | `data-push-notification-new-opt-in-button-label` | No | `string` | `Get Notifications From Us` | Label on the button which initiates the push notification subscription opt-in flow shown to users who have not yet subscribed. |
 | `data-push-notification-update-opt-in-button-label` | No | `string` | `Update Notification Preferences` | Label on the button which updates the user's push notification subscription preferences for users who are already subscribed. |
 | `data-push-notification-new-opt-in-prompt-message` | No | `string` | `Get notified whenever we go live or announce a change to our schedule.` | Message shown to new subscribers while opting into push notifications within the OneSignal slidedown. |
@@ -84,6 +84,8 @@ If you want to embed this player onto your webpage, follow these steps. Keep in 
 | `data-push-notification-persist` | No | `boolean` | `true` | Set to `"false"` to dismiss notifications automatically rather than keeping them until clicked. Setting to `"true"` or simply having this attribute present without a value will enable this feature. |
 | `data-push-notification-scope` | No | `string` | `/live-streaming` | Service worker scope passed to OneSignal. See [Push Notifications](#push-notifications). |
 | `data-push-notification-service-worker-path` | No | `string` | `OneSignalSDKWorker.js` | Path to your OneSignal service worker file. See [Push Notifications](#push-notifications). |
+
+(*) If attribute is absent (or if loading the OneSignal SDK fails), the entire push notification experience is silently disabled.
 
 ## Player States
 
