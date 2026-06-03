@@ -52,8 +52,8 @@ If you want to embed this player onto your webpage, follow these steps. Keep in 
           data-prewarming-message="We will be going live *very* soon."
           data-push-notification-app-id="00000000-0000-0000-0000-000000000000"
           data-push-notification-safari-web-id="web.onesignal.auto.00000000-0000-0000-0000-000000000000"
-          data-push-notification-service-worker-path="/service-worker.js"
-          data-push-notification-scope="/">
+          data-push-notification-scope="/"
+          data-push-notification-service-worker-path="/service-worker.js">
       </div>
       ```
 
@@ -78,10 +78,10 @@ If you want to embed this player onto your webpage, follow these steps. Keep in 
 | `data-push-notification-update-opt-in-cancel-button-label` | No | `string` | `Cancel` | Cancel button label in the existing-subscriber slidedown. |
 | `data-push-notification-segment-go-live-label` | No | `string` | `Go-Live` | Display label for the Go-Live notification segment shown in the subscription slidedown. |
 | `data-push-notification-segment-schedule-updates-label` | No | `string` | `Schedule Updates` | Display label for the Schedule Updates notification segment shown in the subscription slidedown. |
-| `data-push-notification-welcome-notification` | No | `boolean` | `true` | Set to `"false"` to suppress the welcome notification sent after a new subscriber opts in. |
+| `data-push-notification-welcome-notification` | No | `boolean` | `true` | Set to `"false"` to suppress the welcome notification sent after a new subscriber opts in. Setting to `"true"` or simply having this attribute present without a value will enable this feature. |
 | `data-push-notification-welcome-notification-title` | No | `string` | `Welcome` | Title of the welcome notification. |
 | `data-push-notification-welcome-notification-message` | No | `string` | `You will now get updates from us when there are relevant updates to share.` | Body of the welcome notification. |
-| `data-push-notification-persist` | No | `boolean` | `true` | Set to `"false"` to dismiss notifications automatically rather than keeping them until clicked. |
+| `data-push-notification-persist` | No | `boolean` | `true` | Set to `"false"` to dismiss notifications automatically rather than keeping them until clicked. Setting to `"true"` or simply having this attribute present without a value will enable this feature. |
 | `data-push-notification-scope` | No | `string` | `/live-streaming` | Service worker scope passed to OneSignal. See [Push Notifications](#push-notifications). |
 | `data-push-notification-service-worker-path` | No | `string` | `OneSignalSDKWorker.js` | Path to your OneSignal service worker file. See [Push Notifications](#push-notifications). |
 
@@ -97,7 +97,7 @@ You can observe a few examples of how to use these classes inside of the `styles
 
 The loading state is active immediately on page load while the player waits for the backend to respond.
 
-#### Container modifications
+#### Loading Container Modifications
 
 | Attribute | Value | Description |
 | --- | --- | --- |
@@ -107,7 +107,7 @@ The loading state is active immediately on page load while the player waits for 
 | `data-player-loading` | *(empty)* | Present while the player is loading. |
 | `data-status` | `loading` | Reflects the current player status. |
 
-#### CSS classes
+#### Loading CSS Classes
 
 | Class | Element | Description |
 | --- | --- | --- |
@@ -119,7 +119,7 @@ The loading state is active immediately on page load while the player waits for 
 
 When the backend returns `status: "offline"`, the player enters the offline state.
 
-#### Container modifications
+#### Offline Container Modifications
 
 | Attribute | Value | Description |
 | --- | --- | --- |
@@ -130,7 +130,7 @@ When the backend returns `status: "offline"`, the player enters the offline stat
 | `data-push-notification-subscription-status` | `new` \| `existing` \| `disabled` | Reflects the user's push notification subscription status. See [Push Notifications](#push-notifications). |
 | `data-status` | `offline` | Reflects the current player status. |
 
-#### CSS classes
+#### Offline CSS Classes
 
 | Class | Element | Description |
 | --- | --- | --- |
@@ -165,7 +165,7 @@ When the backend returns `status: "prewarming"`, the player enters the prewarmin
 
 When the backend returns `status: "live"`, the player enters the live state and embeds the YouTube player.
 
-#### Container modifications
+#### Live Container Modifications
 
 | Attribute | Value | Description |
 | --- | --- | --- |
@@ -175,7 +175,7 @@ When the backend returns `status: "live"`, the player enters the live state and 
 | `data-initialized` | `true` | Reflects whether the player has finished initializing. |
 | `data-status` | `live` | Reflects the current player status. |
 
-#### CSS classes
+#### Live CSS Classes
 
 | Class | Element | Description |
 | --- | --- | --- |
@@ -187,7 +187,7 @@ When the backend returns `status: "live"`, the player enters the live state and 
 
 When the backend returns `status: "canceled"`, the player enters an event canceled state.
 
-#### Container modifications
+#### Canceled Container Modifications
 
 The following attributes are added to the outer container `<div>` when the canceled state is active:
 
@@ -200,7 +200,7 @@ The following attributes are added to the outer container `<div>` when the cance
 | `data-push-notification-subscription-status` | `new` \| `existing` \| `disabled` | Reflects the user's push notification subscription status. See [Push Notifications](#push-notifications). |
 | `data-status` | `canceled` | Reflects the current player status. |
 
-#### CSS classes
+#### Canceled CSS Classes
 
 All content is injected inside the container and can be targeted with the following classes:
 
@@ -218,9 +218,9 @@ All content is injected inside the container and can be targeted with the follow
 
 ### Error
 
-The error state is entered when the player fails to reach the backend or receives an unparseable response.
+The error state is entered when the player fails to reach the backend or receives a response to cannot parse.
 
-#### Container modifications
+#### Error Container Modifications
 
 | Attribute | Value | Description |
 | --- | --- | --- |
@@ -230,7 +230,7 @@ The error state is entered when the player fails to reach the backend or receive
 | `data-player-error` | *(empty)* | Present when the player has encountered an error. |
 | `data-status` | `error` | Reflects the current player status. |
 
-#### CSS classes
+#### Error CSS Classes
 
 | Class | Element | Description |
 | --- | --- | --- |
