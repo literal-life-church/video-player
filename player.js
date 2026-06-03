@@ -52,10 +52,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const CONTAINER_ID = "literal-life-church-video-player";
 
-    // Element dataset defaults
+    // Message defaults
     const DEFAULT_ERROR_MESSAGE = "We were not able to load any information about this event. Please contact the site owner.";
     const DEFAULT_OFFLINE_MESSAGE = "This event is offline.";
     const DEFAULT_PREWARMING_MESSAGE = "We are getting ready to go live very soon. Please stay tuned.";
+
+    // Push notification defaults
     const DEFAULT_PUSH_NOTIFICATION_NEW_OPT_IN_BUTTON_LABEL = "Get Notifications From Us";
     const DEFAULT_PUSH_NOTIFICATION_NEW_OPT_IN_PROMPT_MESSAGE = "Get notified whenever we go live or announce a change to our schedule.";
     const DEFAULT_PUSH_NOTIFICATION_NEW_OPT_IN_ACCEPT_BUTTON_LABEL = "Subscribe";
