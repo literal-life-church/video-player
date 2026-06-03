@@ -303,10 +303,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (pushNotificationsEnabled) {
                     await loadScript(ONESIGNAL_URL);
 
-                    await new Promise((resolve) => {
+                    await new Promise((resolve, reject) => {
                         window.OneSignalDeferred = window.OneSignalDeferred || [];
-                        window.OneSignalDeferred.push(async (OneSignal) => {
-                            await OneSignal.init({
+                        window.OneSignalDeferred.push((OneSignal) =>
+                            OneSignal.init({
                                 appId: pushNotificationAppId,
                                 safari_web_id: pushNotificationSafariWebId,
                                 autoResubscribe: AUTO_RESUBSCRIBE,
@@ -339,10 +339,10 @@ document.addEventListener("DOMContentLoaded", () => {
                                     title: pushNotificationWelcomeNotificationTitle,
                                     message: pushNotificationWelcomeNotificationMessage
                                 }
-                            });
-
-                            resolve();
-                        });
+                            })
+                            .then(resolve)
+                            .catch(reject)
+                        );
                     });
                 }
             } catch (error) {
