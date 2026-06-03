@@ -1,6 +1,6 @@
 # Literal Life Church Video Player
 
-Frontend video player for live streaming events that hooks into our [Media API](https://github.com/literal-life-church/media-api) to display a video player container holding the live event, related announcements, schedules, and deliver push notifications.
+Frontend video player for live streaming events that hooks into our [Media API](https://github.com/literal-life-church/media-api) to display the event in a YouTube player, related announcements, schedules, and deliver push notifications.
 
 ## For Developers
 
