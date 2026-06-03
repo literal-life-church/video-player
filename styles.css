@@ -1,7 +1,45 @@
+/* Branding */
+
+:root {
+    --primary-blue: #0D283B;
+    --on-primary-blue: #FFFFFF;
+
+    --background-blue: #EEEEEE;
+    --on-background-blue: var(--primary-blue);
+
+    --error-red: #FB6B60;
+    --on-error-red: #FFFFFF;
+
+    --header-color: var(--primary-blue);
+    --header-font: "georgiapro", sans-serif;
+    --header-font-size: 3rem;
+    --header-font-weight: 600;
+    
+    --body-color: var(--on-background-blue);
+    --body-font: "poppins", sans-serif;
+    --body-font-size: 1rem;
+    --body-font-weight: 400;
+    --body-font-weight-bold: 700;
+
+    --button-background-color: var(--primary-blue);
+    --button-background-color-hover: #3D5262;
+    --button-font-size: 0.875rem;
+    --button-letter-spacing: 0.1rem;
+    --button-text-color: var(--on-primary-blue);
+
+    --link-color: var(--on-background-blue);
+
+    --player-container-aspect-ratio: 16 / 9;
+    --player-container-border-radius: 0.5rem;
+    --player-container-max-width: 60rem;
+
+    --state-transition-duration: 0.3s;
+}
+
 /* Transitions */
 
 #literal-life-church-video-player > * {
-    animation: player-fade-in 0.3s ease;
+    animation: player-fade-in var(--state-transition-duration) ease;
 }
 
 @keyframes player-fade-in {
@@ -13,50 +51,47 @@
 
 #literal-life-church-video-player {
     align-items: center;
-    aspect-ratio: 16 / 9;
-    background: #000;
-    border-radius: 0.5rem;
-    color: #ffffff;
+    aspect-ratio: var(--player-container-aspect-ratio);
+    background: var(--background-blue);
+    border-radius: var(--player-container-border-radius);
+    color: var(--on-background-blue);
     display: flex;
-    font-family: "Roboto", sans-serif;
+    font-family: var(--body-font);
+    font-weight: var(--body-font-weight);
     justify-content: center;
-    max-width: 960px;
+    max-width: var(--player-container-max-width);
     overflow: hidden;
-    width: 50%;
 }
 
-#literal-life-church-video-player > .loading-container {
-    color: #d78819;
-}
-
-/* Message States (offline, prewarming, canceled) */
-
-#literal-life-church-video-player > .message-container {
-    padding: 1rem;
-    text-align: left;
-}
-
-#literal-life-church-video-player > .message-container h1 {
-    color: #d78819;
-    font-size: 3rem;
+#literal-life-church-video-player h1 {
+    color: var(--header-color);
+    font-family: var(--header-font);
+    font-size: var(--header-font-size);
+    font-weight: var(--header-font-weight);
     margin: 0.5rem 0;
 }
 
-#literal-life-church-video-player > .message-container p {
-    font-size: 1rem;
+#literal-life-church-video-player p {
+    color: var(--body-color);
+    font-size: var(--body-font-size);
 }
 
-#literal-life-church-video-player > .message-container a {
-    color: #d78819;
+#literal-life-church-video-player a {
+    color: var(--link-color);
 }
 
-/* Error State */
+/* Loading State */
 
-#literal-life-church-video-player.player-error {
-    background-color: #fb6b60;
+#literal-life-church-video-player > .loading-container {
+    color: var(--primary-blue);
 }
 
-#literal-life-church-video-player > .error-container {
+/* General Message States (offline, prewarming, canceled) */
+
+#literal-life-church-video-player > .message-container {
+    max-height: calc(100% - 2rem);
+    max-width: calc(100% - 2rem);
+    overflow: scroll;
     padding: 1rem;
     text-align: left;
 }
@@ -64,11 +99,14 @@
 /* Canceled Event */
 
 #literal-life-church-video-player > .message-container.message-event-canceled-container > .event-canceled-status-balloon {
-    background-color: #d78819 !important;
-    border-radius: 0.365rem;
-    color: #ffffff;
-    font-size: 0.75rem;
+    background-color: var(--button-background-color) !important;
+    border-radius: 100rem;
+    color: var(--button-text-color);
+    font-size: var(--button-font-size);
+    font-weight: var(--body-font-weight-bold);
+    letter-spacing: var(--button-letter-spacing);
     padding: 0.2rem 0.4rem;
+    text-transform: uppercase;
 }
 
 #literal-life-church-video-player > .message-container.message-event-canceled-container > .event-canceled-name {
@@ -81,7 +119,7 @@
 }
 
 #literal-life-church-video-player > .message-container.message-event-canceled-container > .event-canceled-original-schedule > .event-canceled-original-schedule-label {
-    font-weight: bold;
+    font-weight: var(--body-font-weight-bold);
 }
 
 #literal-life-church-video-player > .message-container.message-event-canceled-container > .event-canceled-original-schedule > .event-canceled-original-schedule-time {
@@ -96,14 +134,103 @@
     width: 100%;
 }
 
+/* Error State */
+
+#literal-life-church-video-player.player-error {
+    background-color: var(--error-red);
+}
+
+#literal-life-church-video-player > .error-container {
+    color: var(--on-error-red);
+}
+
+
+#literal-life-church-video-player > .error-container h1, #literal-life-church-video-player > .error-container p, #literal-life-church-video-player > .error-container a {
+    color: var(--on-error-red);
+}
+
 /* Push Notification Opt-In Button (Does not style the OneSignal slidedown prompt) */
 
 #literal-life-church-video-player > .message-container > .push-notification-opt-in {
-    background-color: #d78819;
+    background-color: var(--button-background-color);
     border: none;
-    border-radius: 1rem;
-    color: #ffffff;
+    border-radius: 100rem;
+    color: var(--button-text-color);
     cursor: pointer;
-    font-size: 0.875rem;
-    padding: 0.5rem 1rem;
+    font-size: var(--button-font-size);
+    font-weight: var(--body-font-weight-bold);
+    letter-spacing: var(--button-letter-spacing);
+    margin-top: 2rem;
+    padding: 1rem 2rem;
+    text-transform: uppercase;
+
+    transition: background-color var(--state-transition-duration) ease; 
+}
+
+#literal-life-church-video-player > .message-container > .push-notification-opt-in:hover {
+    background-color: var(--button-background-color-hover);
+}
+
+/* OneSignal Slidedown Custom Styles */
+
+#onesignal-slidedown-container > #onesignal-slidedown-dialog > #normal-slidedown > #slidedown-body > .slidedown-body-icon {
+    border-radius: var(--player-container-border-radius);
+    overflow: hidden;
+}
+
+#onesignal-slidedown-container > #onesignal-slidedown-dialog > #normal-slidedown > #slidedown-body > .slidedown-body-message {
+    color: var(--on-background-blue);
+    font-family: var(--body-font);
+    font-size: var(--body-font-size);
+    font-weight: var(--body-font-weight);
+}
+
+#onesignal-slidedown-container > #onesignal-slidedown-dialog > #normal-slidedown > #slidedown-body > .tagging-container {
+    display: flow;
+}
+
+#onesignal-slidedown-container > #onesignal-slidedown-dialog > #normal-slidedown > #slidedown-body > .tagging-container > .tagging-container-col .onesignal-category-label > .onesignal-checkmark {
+    background-color: var(--primary-blue);
+}
+
+#onesignal-slidedown-container > #onesignal-slidedown-dialog > #normal-slidedown > #slidedown-body > .tagging-container > .tagging-container-col .onesignal-category-label > .onesignal-category-label-text {
+    color: var(--on-background-blue);
+    font-family: var(--body-font) !important;
+    font-size: var(--body-font-size);
+    font-weight: var(--body-font-weight);
+}
+
+#onesignal-slidedown-container > #onesignal-slidedown-dialog > #normal-slidedown > #slidedown-footer > .primary {
+    background-color: var(--button-background-color);
+    border: none;
+    border-radius: 100rem;
+    color: var(--button-text-color);
+    cursor: pointer;
+    font-size: var(--button-font-size);
+    font-weight: var(--body-font-weight-bold);
+    letter-spacing: var(--button-letter-spacing);
+    padding: 1rem 2rem;
+    text-transform: uppercase;
+
+    transition: background-color var(--state-transition-duration) ease; 
+}
+
+#onesignal-slidedown-container > #onesignal-slidedown-dialog > #normal-slidedown > #slidedown-footer > .primary:hover {
+    background-color: var(--button-background-color-hover);
+}
+
+#onesignal-slidedown-container > #onesignal-slidedown-dialog > #normal-slidedown > #slidedown-footer > .secondary {
+    color: var(--button-background-color) !important;
+    cursor: pointer;
+    font-size: var(--button-font-size);
+    font-weight: var(--body-font-weight-bold);
+    letter-spacing: var(--button-letter-spacing);
+    padding: 1rem 2rem;
+    text-transform: uppercase;
+
+    transition: color var(--state-transition-duration) ease; 
+}
+
+#onesignal-slidedown-container > #onesignal-slidedown-dialog > #normal-slidedown > #slidedown-footer > .secondary:hover {
+    color: var(--button-background-color-hover) !important;
 }
