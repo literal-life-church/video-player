@@ -15,6 +15,7 @@ The player depends on the [Media API](https://github.com/literal-life-church/med
 | File | Purpose |
 | --- | --- |
 | `player.js` | The entire library. All logic lives here. |
+| `service-worker.js` | OneSignal service worker shim. Must be served at the path configured by `data-push-notification-service-worker-path`. Contains a single `importScripts(...)` call. |
 | `index.html` | Local demo page. Not shipped; for development use only. |
 | `package.json` | Defines the `dev` script only. No runtime dependencies. |
 | `README.md` | End-user documentation: developer setup and embedding guide. |
@@ -24,7 +25,7 @@ The player depends on the [Media API](https://github.com/literal-life-church/med
 - **One file.** Do not introduce additional JS files, modules, or a build pipeline unless explicitly asked. All changes go into `player.js`.
 - **No npm runtime dependencies.** Do not add runtime npm packages. The only permitted dev dependency is the local server (`browser-sync`). Third-party libraries are loaded at runtime from jsDelivr, CDNJS, or other CDN using the `loadScript` utility (see below).
 - **Plain JS.** No TypeScript, no transpilation, no module syntax (`import`/`export`). The file is served as-is by jsDelivr and must run natively in the browser.
-- **Constants block at the top.** Configuration defaults (e.g. `CONTAINER_ID`, `DEFAULT_ASPECT_RATIO`, `LOGGING_TAG`) are declared in the `// region Configuration Defaults` block at the top of the `DOMContentLoaded` callback. Add new constants there, not inline.
+- **Constants block at the top.** Configuration defaults (e.g. `CONTAINER_ID`, `DEFAULT_ERROR_MESSAGE`, `LOGGING_TAG`) are declared in the `// region Configuration Defaults` block at the top of the `DOMContentLoaded` callback. Add new constants there, not inline.
 - **Console error prefix.** All error messages must be prefixed with the `LOGGING_TAG` constant so they are identifiable in the browser console.
 
 ## Loading External Libraries
@@ -68,3 +69,15 @@ After the initial fetch resolves, the library opens an `EventSource` to `https:/
 The data with `event.state_transition` contains the exact same payload as `https://<data-backend-host>/live-streaming` and is used to immediately issue updates to the client when the live event transitions its state. All UI rendering for both the initial load and SSE transitions is handled by the inner `renderState(data)` async function defined inside the `DOMContentLoaded` callback. Any future state changes to the UI must go through this function — do not add inline rendering logic to the fetch handler or the SSE listener.
 
 The `event.close_connection` is issued by the server to ask the client to close the connection. This approach is taken instead of issuing a 204 because the server cannot tell if the client is a new user sitting on a page with an `offline` event, waiting for it to go online, or if they were present when the state went from `live` to `offline`. We _only_ want to force a disconnection in the second scenario, not for all `offline` events.
+
+## Push Notifications
+
+Push notifications are powered by the OneSignal Web Push SDK. Key implementation details for agents working in this area:
+
+- **`pushNotificationsEnabled` is `let`, not `const`.** It is declared in Required Initialization and may be reassigned to `false` in the `catch` block of the OneSignal init flow (e.g. when an ad blocker prevents the SDK from loading). Never change it back to `const`.
+- **OneSignal initialises before `renderState`.** In the fetch `.then()` handler, a `try/catch/finally` block loads the SDK and calls `OneSignal.init()` before `renderState(data)` is called. This ensures `window.OneSignal.User.PushSubscription.optedIn` is available when the opt-in button is rendered. On SSE transitions, OneSignal is already initialised.
+- **`OneSignal.init()` is wrapped in a `Promise(resolve, reject)`.** The callback passed to `window.OneSignalDeferred.push()` chains `.then(resolve).catch(reject)` onto the init call so that a failed init rejects the outer Promise and is caught by the surrounding `try/catch`. Do not revert to an `async` callback — that pattern silently swallows the rejection and hangs the Promise.
+- **Two inner helpers in `// region State Rendering`:**
+  - `setPushSubscriptionStatus()` — stamps `data-push-notification-subscription-status` on the container (`new`, `existing`, or `disabled`). Called at the start of `renderState` and in the `.catch()` error handler.
+  - `appendPushButton(messageContainer)` — creates and appends the opt-in `<button>` as the last child of the message container. Called at the end of the `offline`, `prewarming`, and `canceled` branches only. Does nothing (returns early) when `pushNotificationsEnabled` is `false`.
+- **The opt-in button is absent in `live` and `error` states.** Do not add it there.

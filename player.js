@@ -168,10 +168,15 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const setPushSubscriptionStatus = () => {
-        if (pushNotificationsEnabled) {
-            const isSubscribed = window.OneSignal?.User?.PushSubscription?.optedIn ?? false;
-            container.dataset.pushNotificationSubscriptionStatus = isSubscribed ? "existing" : "new";
-        } else {
+        try {
+            if (pushNotificationsEnabled) {
+                const isSubscribed = window.OneSignal?.User?.PushSubscription?.optedIn ?? false;
+                container.dataset.pushNotificationSubscriptionStatus = isSubscribed ? "existing" : "new";
+            } else {
+                container.dataset.pushNotificationSubscriptionStatus = "disabled";
+            }
+        } catch (error) {
+            console.warn(`${LOGGING_TAG} Could not determine OneSignal push notification subscription status.`, error);
             container.dataset.pushNotificationSubscriptionStatus = "disabled";
         }
     };
