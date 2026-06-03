@@ -95,3 +95,15 @@
     height: 100%;
     width: 100%;
 }
+
+/* Push Notification Opt-In Button (Does not style the OneSignal slidedown prompt) */
+
+#literal-life-church-video-player > .message-container > .push-notification-opt-in {
+    background-color: #d78819;
+    border: none;
+    border-radius: 1rem;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+}

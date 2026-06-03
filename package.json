@@ -2,7 +2,7 @@
     "name": "literal-life-church-video-player",
     "version": "2026.04.01",
     "scripts": {
-        "dev": "browser-sync start --server --files \"*.js, *.html, *.css\""
+        "dev": "browser-sync start --server --port 80 --files \"*.js, *.html, *.css\""
     },
     "devDependencies": {
         "browser-sync": "3.0.4"
