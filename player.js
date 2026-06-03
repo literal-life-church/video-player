@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const DEFAULT_ERROR_MESSAGE = "We were not able to load any information about this event. Please contact the site owner.";
     const DEFAULT_OFFLINE_MESSAGE = "This event is offline.";
     const DEFAULT_PREWARMING_MESSAGE = "We are getting ready to go live very soon. Please stay tuned.";
-    const DEFAULT_PUSH_NOTIFICATION_NEW_OPT_IN_BUTTON_LABEL = "Get Notified When We Go Live";
+    const DEFAULT_PUSH_NOTIFICATION_NEW_OPT_IN_BUTTON_LABEL = "Get Notifications From Us";
     const DEFAULT_PUSH_NOTIFICATION_NEW_OPT_IN_PROMPT_MESSAGE = "Get notified whenever we go live or announce a change to our schedule.";
     const DEFAULT_PUSH_NOTIFICATION_NEW_OPT_IN_ACCEPT_BUTTON_LABEL = "Subscribe";
     const DEFAULT_PUSH_NOTIFICATION_NEW_OPT_IN_CANCEL_BUTTON_LABEL = "Cancel";
@@ -114,10 +114,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const apiEndpoint = `https://${backendHost}/live-streaming`;
     const sseEndpoint = `https://${backendHost}/live-streaming/subscribe`;
 
-    const pushNotificationAppId = container.dataset.pushNotificationAppId?.trim();
+    const pushNotificationAppId = container.dataset.pushNotificationAppId?.trim() || "";
     const pushNotificationSafariWebId = container.dataset.pushNotificationSafariWebId?.trim() || "";
 
-    if (!pushNotificationAppId || !pushNotificationSafariWebId) {
+    if (!pushNotificationAppId || pushNotificationAppId === ""|| !pushNotificationSafariWebId || pushNotificationSafariWebId === "") {
         console.error(`${LOGGING_TAG} Push notifications will be disabled: missing required data-push-notification-app-id and data-push-notification-safari-web-id attributes on the element with id="${CONTAINER_ID}".`);
     }
 
@@ -152,18 +152,25 @@ document.addEventListener("DOMContentLoaded", () => {
     // region State Rendering
 
     const appendPushButton = (messageContainer) => {
+        if (!pushNotificationsEnabled) return;
+
+        const isSubscribed = window.OneSignal?.User?.PushSubscription?.optedIn ?? false;
+        const pushButton = document.createElement("button");
+
+        pushButton.className = `push-notification-opt-in ${isSubscribed ? "existing-subscriber" : "new-subscriber"}`;
+        pushButton.textContent = isSubscribed ? pushNotificationUpdateOptInButtonLabel : pushNotificationNewOptInButtonLabel;
+
+        pushButton.addEventListener("click", () => {
+            window.OneSignal.Slidedown.promptPushCategories({ force: true });
+        });
+
+        messageContainer.appendChild(pushButton);
+    };
+
+    const setPushSubscriptionStatus = () => {
         if (pushNotificationsEnabled) {
             const isSubscribed = window.OneSignal?.User?.PushSubscription?.optedIn ?? false;
             container.dataset.pushNotificationSubscriptionStatus = isSubscribed ? "existing" : "new";
-
-            const pushButton = document.createElement("button");
-            pushButton.className = `push-notification-opt-in ${isSubscribed ? "existing-subscriber" : "new-subscriber"}`;
-            pushButton.textContent = isSubscribed ? pushNotificationUpdateOptInButtonLabel : pushNotificationNewOptInButtonLabel;
-            pushButton.addEventListener("click", () => {
-                window.OneSignal.Slidedown.promptPushCategories({ force: true });
-            });
-
-            messageContainer.appendChild(pushButton);
         } else {
             container.dataset.pushNotificationSubscriptionStatus = "disabled";
         }
@@ -171,6 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const renderState = async (data) => {
         resetContainerState(container);
+        setPushSubscriptionStatus();
 
         container.classList.add("player-initialized");
         container.dataset.error = "false";
@@ -340,25 +348,26 @@ document.addEventListener("DOMContentLoaded", () => {
             } catch (error) {
                 console.warn(`${LOGGING_TAG} The OneSignal push notification SDK could not be loaded. Push notifications have been disabled. This could be due to an ad-blocker preventing the script from loading or a misconfigured OneSignal setup.`, error);
                 pushNotificationsEnabled = false;
+            } finally {
+                await renderState(data);
+
+                const eventSource = new EventSource(sseEndpoint);
+
+                eventSource.addEventListener(SSE_STATE_TRANSITION_EVENT_NAME, async (event) => {
+                    await renderState(JSON.parse(event.data));
+                });
+
+                eventSource.addEventListener(SSE_CLOSE_EVENT_NAME, () => {
+                    eventSource.close();
+                });
             }
-
-            await renderState(data);
-
-            const eventSource = new EventSource(sseEndpoint);
-
-            eventSource.addEventListener(SSE_STATE_TRANSITION_EVENT_NAME, async (event) => {
-                await renderState(JSON.parse(event.data));
-            });
-
-            eventSource.addEventListener(SSE_CLOSE_EVENT_NAME, () => {
-                eventSource.close();
-            });
         })
         .catch(async (error) => {
             console.error(error);
 
             await loadScript(MARKED_URL);
             resetContainerState(container);
+            setPushSubscriptionStatus();
 
             container.classList.add("player-error", "player-uninitialized");
             container.dataset.error = "true";
