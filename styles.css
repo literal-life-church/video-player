@@ -13,13 +13,19 @@
     --header-color: var(--primary-blue);
     --header-font: "georgiapro", sans-serif;
     --header-font-size: 3rem;
+    --header-font-size-small: 2rem;
+    --header-font-size-smaller: 1.5rem;
     --header-font-weight: 600;
+    --header-line-height: 1.1;
     
     --body-color: var(--on-background-blue);
     --body-font: "poppins", sans-serif;
     --body-font-size: 1rem;
+    --body-font-size-small: 0.875rem;
+    --body-font-size-smaller: 0.75rem;
     --body-font-weight: 400;
     --body-font-weight-bold: 700;
+    --body-line-height: 1.5;
 
     --button-background-color: var(--primary-blue);
     --button-background-color-hover: #3D5262;
@@ -31,7 +37,6 @@
 
     --player-container-aspect-ratio: 16 / 9;
     --player-container-border-radius: 0.5rem;
-    --player-container-max-width: 60rem;
 
     --state-transition-duration: 0.3s;
 }
@@ -59,8 +64,10 @@
     font-family: var(--body-font);
     font-weight: var(--body-font-weight);
     justify-content: center;
-    max-width: var(--player-container-max-width);
     overflow: hidden;
+
+    container-name: player-container;
+    container-type: inline-size;
 }
 
 #literal-life-church-video-player h1 {
@@ -68,16 +75,38 @@
     font-family: var(--header-font);
     font-size: var(--header-font-size);
     font-weight: var(--header-font-weight);
+    line-height: var(--header-line-height);
     margin: 0.5rem 0;
 }
 
 #literal-life-church-video-player p {
     color: var(--body-color);
     font-size: var(--body-font-size);
+    line-height: var(--body-line-height);
 }
 
 #literal-life-church-video-player a {
     color: var(--link-color);
+}
+
+@container player-container (max-width: 30rem) {
+    #literal-life-church-video-player h1 {
+        font-size: var(--header-font-size-small);
+    }
+
+    #literal-life-church-video-player p {
+        font-size: var(--body-font-size-small);
+    }
+}
+
+@container player-container (max-width: 20rem) {
+    #literal-life-church-video-player h1 {
+        font-size: var(--header-font-size-smaller);
+    }
+
+    #literal-life-church-video-player p {
+        font-size: var(--body-font-size-smaller);
+    }
 }
 
 /* Loading State */
@@ -142,6 +171,11 @@
 
 #literal-life-church-video-player > .error-container {
     color: var(--on-error-red);
+    max-height: calc(100% - 2rem);
+    max-width: calc(100% - 2rem);
+    overflow: scroll;
+    padding: 1rem;
+    text-align: left;
 }
 
 
