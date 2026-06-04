@@ -30,6 +30,7 @@
     --button-background-color: var(--primary-blue);
     --button-background-color-hover: #3D5262;
     --button-font-size: 0.875rem;
+    --button-font-size-small: 0.75rem;
     --button-letter-spacing: 0.1rem;
     --button-text-color: var(--on-primary-blue);
 
@@ -131,9 +132,11 @@
     background-color: var(--button-background-color) !important;
     border-radius: 100rem;
     color: var(--button-text-color);
+    display: inline-block;
     font-size: var(--button-font-size);
     font-weight: var(--body-font-weight-bold);
     letter-spacing: var(--button-letter-spacing);
+    margin-bottom: 0.5rem;
     padding: 0.2rem 0.4rem;
     text-transform: uppercase;
 }
@@ -153,6 +156,14 @@
 
 #literal-life-church-video-player > .message-container.message-event-canceled-container > .event-canceled-original-schedule > .event-canceled-original-schedule-time {
     font-style: italic;
+}
+
+@container player-container (max-width: 30rem) {
+    #literal-life-church-video-player > .message-container.message-event-canceled-container > .event-canceled-status-balloon {
+        font-size: var(--button-font-size-small);
+        margin-bottom: 0.25rem;
+        padding: 0.1rem 0.4rem;
+    }
 }
 
 /* Live Event */
@@ -203,6 +214,14 @@
 
 #literal-life-church-video-player > .message-container > .push-notification-opt-in:hover {
     background-color: var(--button-background-color-hover);
+}
+
+@container player-container (max-width: 30rem) {
+    #literal-life-church-video-player > .message-container > .push-notification-opt-in {
+        font-size: var(--button-font-size-small);
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+    }
 }
 
 /* OneSignal Slidedown Custom Styles */
