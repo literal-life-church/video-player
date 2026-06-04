@@ -5,22 +5,47 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Literal Life Church Video Player</title>
 
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
-
+        <link rel="stylesheet" href="https://use.typekit.net/eli7zml.css">
         <link rel="stylesheet" href="styles.css" />
+
+        <style type="text/css">
+            /* Only for this demo */
+            #literal-life-church-video-player {
+                max-width: 60rem;
+            }
+        </style>
     </head>
     <body>
         <div
             id="literal-life-church-video-player"
             data-backend-host="api.example.com"
+
             data-error-message="# Error Loading Event
-An error occurred while loading the event. Please try again later."
+An error occurred while loading the event. Please try again [later](https://time.gov/)."
             data-offline-message="# Event Offline
-Please come back later."
+Please come back [later](https://time.gov/)."
             data-prewarming-message="# Event Going Live Soon
-Please stay tuned."></div>
+Please stay tuned."
+
+            data-push-notification-app-id="00000000-0000-0000-0000-000000000000"
+            data-push-notification-safari-web-id="web.onesignal.auto.00000000-0000-0000-0000-000000000000"
+            data-push-notification-new-opt-in-button-label="Sign Me Up!"
+            data-push-notification-update-opt-in-button-label="I've Changed My Mind"
+            data-push-notification-new-opt-in-prompt-message="Would you like to receive notifications?"
+            data-push-notification-new-opt-in-accept-button-label="Yes"
+            data-push-notification-new-opt-in-cancel-button-label="Never Mind"
+            data-push-notification-update-opt-in-prompt-message="What would you like to change?"
+            data-push-notification-update-opt-in-accept-button-label="Update"
+            data-push-notification-update-opt-in-cancel-button-label="Don't Change Anything"
+            data-push-notification-segment-go-live-label="When We Go Live"
+            data-push-notification-segment-schedule-updates-label="If We Update the Schedule"
+            data-push-notification-welcome-notification="true"
+            data-push-notification-welcome-notification-title="Thanks for Subscribing!"
+            data-push-notification-welcome-notification-message="We'll let you know when we go live and if there are any schedule changes."
+            data-push-notification-persist="true"
+            data-push-notification-scope="/"
+            data-push-notification-service-worker-path="service-worker.js">
+        </div>
 
         <script src="player.js"></script>
     </body>
